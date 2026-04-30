@@ -31,62 +31,32 @@
 <body>
 
     <div class="login-card">
-        <h2 data-i18n="login_title">Voter Identity</h2>
-        <p style="text-align: center; color: #666; margin-bottom: 2rem;" data-i18n="login_sub">Official Student Election Portal</p>
+        <div class="logo">🗳️ CivicMate <span>AI</span></div>
+        <h1>Welcome Back</h1>
+        <p>Enter your details to access the election portal</p>
         
-        <form id="loginForm" onsubmit="handleLogin(event)">
-            <label data-i18n="full_name">Full Name</label>
-            <input type="text" id="name" class="input-field" data-i18n="ph_name" placeholder="Enter your name" required>
-            
-            <label data-i18n="age">Age</label>
-            <input type="number" id="age" class="input-field" data-i18n="ph_age" placeholder="Enter age" required>
-            
-            <label data-i18n="district">District</label>
-            <input type="text" id="state" class="input-field" data-i18n="ph_district" placeholder="Enter district" required>
-            
-            <button type="submit" class="btn" data-i18n="signin">Sign In</button>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Voter Name</label>
+                <input type="text" id="name" class="input-field" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+                <label>Voter Age</label>
+                <input type="number" id="age" class="input-field" placeholder="18+" required>
+            </div>
+            <div class="form-group">
+                <label>District / State</label>
+                <input type="text" id="state" class="input-field" placeholder="Location" required>
+            </div>
+            <button type="submit" class="btn">Sign In</button>
         </form>
-
-        <div style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem;">
-            <select id="loginLang" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;" onchange="changeLang(this.value)">
-                <option value="English">English</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Marathi">Marathi</option>
-                <option value="Bengali">Bengali</option>
-            </select>
-        </div>
-
+        
         <div class="footer">
             &copy; 2026 CivicMate AI. Secure Voting Environment.
         </div>
     </div>
 
     <script>
-        const translations = {
-            "English": { "login_title": "Voter Identity", "login_sub": "Official Student Election Portal", "full_name": "Full Name", "age": "Age", "district": "District", "signin": "Sign In", "ph_name": "Enter your name", "ph_age": "Enter age", "ph_district": "Enter district" },
-            "Marathi": { "login_title": "मतदार ओळख", "login_sub": "अधिकृत विद्यार्थी निवडणूक पोर्टल", "full_name": "पूर्ण नाव", "age": "वय", "district": "जिल्हा", "signin": "प्रवेश करा", "ph_name": "तुमचे नाव टाका", "ph_age": "वय टाका", "ph_district": "जिल्हा टाका" },
-            "Hindi": { "login_title": "मतदाता पहचान", "login_sub": "आधिकारिक छात्र चुनाव पोर्टल", "full_name": "पूरा नाम", "age": "आयु", "district": "ज़िला", "signin": "प्रवेश करें", "ph_name": "अपना नाम दर्ज करें", "ph_age": "आयु दर्ज करें", "ph_district": "ज़िला दर्ज करें" },
-            "Bengali": { "login_title": "ভোটার পরিচয়", "login_sub": "অফিসিয়াল ছাত্র নির্বাচন পোর্টাল", "full_name": "পুরো নাম", "age": "বয়স", "district": "জেলা", "signin": "প্রবেশ করুন", "ph_name": "আপনার নাম লিখুন", "ph_age": "বয়স লিখুন", "ph_district": "জেলা লিখুন" }
-        };
-
-        function changeLang(lang) {
-            localStorage.setItem('lang', lang);
-            const dict = translations[lang];
-            document.querySelectorAll("[data-i18n]").forEach(el => {
-                const key = el.getAttribute("data-i18n");
-                if (dict[key]) {
-                    if (el.tagName === "INPUT") el.placeholder = dict[key];
-                    else el.innerText = dict[key];
-                }
-            });
-        }
-
-        window.onload = () => {
-            const saved = localStorage.getItem('lang') || 'English';
-            document.getElementById('loginLang').value = saved;
-            changeLang(saved);
-        };
-
         async function handleLogin(e) {
             e.preventDefault();
             const user = {

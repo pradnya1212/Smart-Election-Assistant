@@ -18,13 +18,13 @@
     </div>
     
     {% for cat, candidates in data %}
-    <div class="category-title" data-i18n="{{ cat[1] }}">{{ cat[1] }}</div>
+    <div class="category-title">{{ cat[1] }}</div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         {% for c in candidates %}
         <div class="candidate-row">
             <div class="candidate-info">
                 <div class="avatar">👤</div>
-                <span class="candidate-name" data-i18n="{{ c[1] }}">{{ c[1] }}</span>
+                <span class="candidate-name">{{ c[1] }}</span>
             </div>
             <button class="vote-badge" id="btn-{{ c[0] }}" onclick="castVote({{ c[0] }})" data-i18n="vote_btn">Vote</button>
         </div>
