@@ -125,6 +125,10 @@ def home():
 
 @app.route("/dashboard")
 def dashboard():
+    return render_template("dashboard.html")
+
+@app.route("/categories")
+def categories():
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
     c.execute("SELECT * FROM categories")
@@ -135,7 +139,25 @@ def dashboard():
         candidates = c.fetchall()
         data.append((cat, candidates))
     conn.close()
-    return render_template("index.html", data=data)
+    return render_template("categories.html", data=data)
+
+@app.route("/voting-list")
+def voting_list():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM categories")
+    categories = c.fetchall()
+    data = []
+    for cat in categories:
+        c.execute("SELECT * FROM candidates WHERE category_id=?", (cat[0],))
+        candidates = c.fetchall()
+        data.append((cat, candidates))
+    conn.close()
+    return render_template("voting_list.html", data=data)
+
+@app.route("/ai-assistant")
+def ai_assistant():
+    return render_template("ai_assistant.html")
 
 @app.route("/ask")
 def ask():

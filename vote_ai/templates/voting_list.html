@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+    .category-title { color: #444; font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 1rem 0; text-align: center; }
+    .candidate-row { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; border: 1px solid #eee; padding: 0.75rem 1rem; border-radius: 50px; margin-bottom: 0.75rem; }
+    .candidate-info { display: flex; align-items: center; gap: 1rem; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #666; border: 2px solid white; }
+    .candidate-name { font-weight: 600; color: #334155; }
+    .vote-badge { background: #28a745; color: white; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="section-card">
+    <div class="section-title">
+        <h2>Student Election</h2>
+        <p style="color: #666; font-size: 0.8rem;">Official Polling List</p>
+    </div>
+    
+    {% for cat, candidates in data %}
+    <div class="category-title">{{ cat[1] }}</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        {% for c in candidates %}
+        <div class="candidate-row">
+            <div class="candidate-info">
+                <div class="avatar">👤</div>
+                <span class="candidate-name">{{ c[1] }}</span>
+            </div>
+            <button class="vote-badge" id="btn-{{ c[0] }}" onclick="castVote({{ c[0] }})">Vote</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    async function castVote(id) {
+        const btn = document.getElementById('btn-' + id);
+        btn.innerHTML = "...";
+        const res = await fetch('/vote?id=' + id);
+        const data = await res.json();
+        if(data.success) {
+            btn.innerHTML = "✔ Cast";
+            btn.style.background = "#6c757d";
+            btn.disabled = true;
+        }
+    }
+</script>
+{% endblock %}

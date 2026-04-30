@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card teal">
+        <h3>Voters</h3>
+        <div class="val" id="statVoters">250</div>
+    </div>
+    <div class="stat-card blue">
+        <h3>Voted</h3>
+        <div class="val" id="statVoted">0</div>
+    </div>
+</div>
+
+<div class="section-card">
+    <div class="section-title">
+        <h2>Dashboard Summary</h2>
+        <p style="color: #666; font-size: 0.85rem;">Live election overview</p>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+            <h4 style="margin-bottom: 1rem; color: #334155;">Status Check</h4>
+            <p id="uiEligibility" style="font-weight: 700; font-size: 1.2rem;"></p>
+            <p style="color: #666; margin-top: 0.5rem;">Location: <span id="uiLocation"></span></p>
+        </div>
+        <div>
+            <h4 style="margin-bottom: 1rem; color: #334155;">Voter Checklist</h4>
+            <ul style="list-style: none; font-size: 0.9rem; color: #444;">
+                <li style="margin-bottom: 0.5rem;">✅ Eligibility verified</li>
+                <li style="margin-bottom: 0.5rem;">⏳ Voter ID Registration</li>
+                <li style="margin-bottom: 0.5rem;">⏳ Polling Booth Found</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', () => {
+        if(user) {
+            document.getElementById('uiLocation').innerText = user.state;
+            const elig = document.getElementById('uiEligibility');
+            if(user.age >= 18) {
+                elig.innerText = "✅ Eligible to Vote";
+                elig.style.color = "#28a745";
+            } else {
+                elig.innerText = "❌ Not Eligible";
+                elig.style.color = "#dc3545";
+            }
+            fetchStats();
+        }
+    });
+    async function fetchStats() {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        document.getElementById('statVoted').innerText = data.total_votes;
+    }
+</script>
+{% endblock %}

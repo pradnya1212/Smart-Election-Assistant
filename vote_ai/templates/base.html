@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicMate AI - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --sidebar-bg: #343a40; --main-bg: #e9ecef; --primary-blue: #007bff; --primary-teal: #17a2b8; --border: #dee2e6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--main-bg); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 250px; background: var(--sidebar-bg); display: flex; flex-direction: column; color: white; }
+        .sidebar-header { padding: 1.5rem; background: rgba(0,0,0,0.1); text-align: center; font-weight: 800; font-size: 1.2rem; }
+        .nav-link { padding: 1rem 1.5rem; color: #adb5bd; text-decoration: none; display: flex; align-items: center; gap: 0.75rem; transition: 0.2s; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.1); color: white; }
+        .nav-link.active { border-left: 4px solid var(--primary-blue); }
+
+        /* Main Content */
+        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .header { background: #343a40; padding: 0.75rem 2rem; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .content { padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        /* Shared Components */
+        .section-card { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem; }
+        .section-title { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
+        .btn-primary { background: var(--primary-blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        
+        .input-field { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; outline: none; margin-bottom: 1rem; }
+        
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { padding: 2rem; border-radius: 4px; color: white; display: flex; justify-content: space-between; align-items: flex-end; }
+        .stat-card.teal { background: var(--primary-teal); }
+        .stat-card.blue { background: var(--primary-blue); }
+        .stat-card h3 { font-size: 1.2rem; opacity: 0.9; }
+        .stat-card .val { font-size: 2.5rem; font-weight: 700; }
+
+        .hidden { display: none; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">🗳️ CIVICMATE</div>
+        <a href="/dashboard" class="nav-link {% if request.path == '/dashboard' %}active{% endif %}">🏠 Home</a>
+        <a href="/categories" class="nav-link {% if request.path == '/categories' %}active{% endif %}">📂 Category List</a>
+        <a href="/voting-list" class="nav-link {% if request.path == '/voting-list' %}active{% endif %}">🗳 Voting List</a>
+        <a href="/ai-assistant" class="nav-link {% if request.path == '/ai-assistant' %}active{% endif %}">🤖 AI Assistant</a>
+        <a href="/admin" class="nav-link">📊 Admin Results</a>
+        
+        <div style="margin-top: auto; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.5rem;">LANGUAGE</div>
+            <select id="appLang" style="width: 100%; padding: 0.5rem; border-radius: 4px; background: #444; color: white; border: none;" onchange="localStorage.setItem('lang', this.value)">
+                <option value="English">English</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Marathi">Marathi</option>
+                <option value="Bengali">Bengali</option>
+            </select>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <header class="header">
+            <div style="font-size: 0.9rem; font-weight: 600;">Election Portal v3.0</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span id="userNameDisplay" style="font-size: 0.85rem;">User</span>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script>
+        let user = JSON.parse(localStorage.getItem("user"));
+        window.addEventListener('load', () => {
+            if(!user && window.location.pathname !== '/') { window.location.href = "/"; return; }
+            if(user) {
+                document.getElementById('userNameDisplay').innerText = user.name;
+                const savedLang = localStorage.getItem('lang');
+                if(savedLang) document.getElementById('appLang').value = savedLang;
+            }
+        });
+        function logout() { localStorage.removeItem("user"); window.location.href = "/"; }
+    </script>
+</body>
+</html>

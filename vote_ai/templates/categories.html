@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+    <!-- Category Form -->
+    <div class="section-card">
+        <h3 style="margin-bottom: 1.5rem; color: #334155;">Category Form</h3>
+        <label style="display: block; font-size: 0.85rem; margin-bottom: 0.5rem; color: #666;">Category Name</label>
+        <input type="text" id="catName" class="input-field" placeholder="Enter Category">
+        <div style="display: flex; gap: 1rem;">
+            <button class="btn-primary" style="flex: 1;" onclick="alert('Category saved!')">Save</button>
+            <button style="flex: 1; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Category Table -->
+    <div class="section-card">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+            <thead>
+                <tr style="background: #f8f9fa; border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem; text-align: left;">#</th>
+                    <th style="padding: 1rem; text-align: left;">Category</th>
+                    <th style="padding: 1rem; text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat, candidates in data %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 1rem;">{{ loop.index }}</td>
+                    <td style="padding: 1rem;">{{ cat[1] }}</td>
+                    <td style="padding: 1rem; text-align: right;">
+                        <button style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Edit</button>
+                        <button style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
