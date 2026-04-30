@@ -28,7 +28,7 @@
             <h1>🗳️ Live Election Gateway</h1>
             <a href="/dashboard" class="btn-back">&larr; Back to Dashboard</a>
         </div>
-        
+
         {% for cat, candidates in data %}
         <div class="card">
             <h3>{{ cat[1] }}</h3>
@@ -46,7 +46,7 @@
         function castVote(id) {
             const btn = document.getElementById("btn-" + id);
             if (btn.classList.contains("btn-voted")) return;
-            
+
             btn.innerHTML = "Voting...";
             btn.disabled = true;
 

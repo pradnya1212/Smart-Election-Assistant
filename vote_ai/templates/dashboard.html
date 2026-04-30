@@ -48,7 +48,7 @@
     function renderLocal() {
         const lang = localStorage.getItem('lang') || 'English';
         const dict = translations[lang] || translations["English"];
-        
+
         document.getElementById('uiName').innerText = user.name;
         document.getElementById('uiLocation').innerText = user.state;
         const elig = document.getElementById('uiEligibility');

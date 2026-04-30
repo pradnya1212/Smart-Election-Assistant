@@ -15,13 +15,13 @@
         h1 { font-size: 2rem; font-weight: 700; color: white; margin: 0; }
         .card { background: var(--card); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 12px; border: 1px solid var(--border); }
         .card h3 { margin-top: 0; margin-bottom: 1.5rem; color: var(--accent); }
-        
+
         .candidate-row { display: flex; align-items: center; margin-bottom: 1rem; }
         .candidate-name { width: 150px; font-weight: 600; }
         .bar-container { flex: 1; background: rgba(255,255,255,0.05); height: 24px; border-radius: 12px; overflow: hidden; margin: 0 1rem; position: relative; border: 1px solid var(--border); }
         .bar { background: var(--accent); height: 100%; width: 0%; transition: width 1s ease-in-out; }
         .vote-count { width: 60px; text-align: right; font-weight: 700; color: var(--success); }
-        
+
         .btn-danger { background: var(--danger); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .btn-danger:hover { opacity: 0.8; }
         .input-field { width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: white; margin-bottom: 1rem; box-sizing: border-box; outline: none; }
@@ -62,7 +62,7 @@
                 {% set ns.total = ns.total + c[3] %}
             {% endfor %}
             {% set total = ns.total %}
-            
+
             {% for c in candidates %}
             {% set width = 0 %}
             {% if total > 0 %}
@@ -87,7 +87,7 @@
             if(pwd === "admin123") {
                 document.getElementById("loginView").style.display = "none";
                 document.getElementById("dashboardView").style.display = "block";
-                
+
                 // Animate bars on load
                 const bars = document.querySelectorAll('.bar');
                 bars.forEach(bar => {
@@ -102,7 +102,7 @@
 
         function resetVotes() {
             if(!confirm("⚠️ WARNING: Are you sure you want to reset all votes to 0? This action cannot be undone.")) return;
-            
+
             fetch("/api/reset_votes", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},

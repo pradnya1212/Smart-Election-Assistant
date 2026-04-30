@@ -22,7 +22,7 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS candidates (id INTEGER PRIMARY KEY, name TEXT, category_id INTEGER, votes INTEGER DEFAULT 0)''')
     c.execute('''CREATE TABLE IF NOT EXISTS voters (id INTEGER PRIMARY KEY, name TEXT, age INTEGER, location TEXT)''')
-    
+
     # Seed data only if empty
     c.execute("SELECT COUNT(*) FROM categories")
     if c.fetchone()[0] == 0:
@@ -46,7 +46,7 @@ def ai_response(query, lang="English"):
 
     prompt = f"""
     You are VoteGuide AI, an expert, friendly Election Assistant.
-    
+
     Guidelines:
     1. Answer clearly and concisely in simple language.
     2. Use bullet points and emojis to make the response engaging.
@@ -54,7 +54,7 @@ def ai_response(query, lang="English"):
     3. If the user asks about election procedures, guide them step-by-step.
     4. Stay neutral and strictly informative.
     5. CRITICAL: You MUST respond strictly in the language: {lang}.
-    
+
     User Query: {query}
     """
 
@@ -74,7 +74,7 @@ def ai_response(query, lang="English"):
 def _fallback_response(query, lang="English"):
     """Provides mock responses when AI is down, with basic language support."""
     query = query.lower()
-    
+
     # Dictionaries for basic translations
     responses = {
         "English": {
@@ -98,10 +98,10 @@ def _fallback_response(query, lang="English"):
             "default": "🤖 **অফলাইন মোড:**<br>আমি এআইয়ের সাথে সংযুক্ত হতে পারছি না। অনুগ্রহ করে বাম দিকের বোতাম ব্যবহার করুন!"
         }
     }
-    
+
     # Ensure selected language exists in dictionary, fallback to English
     lang_dict = responses.get(lang, responses["English"])
-    
+
     if "vote" in query or "how" in query or "कसे" in query or "कैसे" in query or "কীভাবে" in query:
         return lang_dict["vote"]
     elif "process" in query or "election" in query or "निवडणूक" in query or "चुनाव" in query:
@@ -199,7 +199,7 @@ def register_voter():
     data = request.json
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
-    c.execute("INSERT INTO voters (name, age, location) VALUES (?, ?, ?)", 
+    c.execute("INSERT INTO voters (name, age, location) VALUES (?, ?, ?)",
               (data.get("name"), data.get("age"), data.get("location")))
     conn.commit()
     conn.close()
@@ -215,7 +215,7 @@ def ask():
     # Convert newlines to HTML breaks for better UI formatting if not already formatted
     if "<br>" not in response_text and "<ul>" not in response_text:
         response_text = response_text.replace("\n", "<br>")
-        
+
     return jsonify({"message": response_text})
 
 @app.route("/guide")
@@ -228,12 +228,12 @@ def check():
         age = int(request.args.get("age", 0))
         if age >= 18:
             return jsonify({
-                "eligible": True, 
+                "eligible": True,
                 "result": f"Awesome! At {age} years old, you are **eligible** to vote. Make sure you register for your Voter ID!"
             })
         else:
             return jsonify({
-                "eligible": False, 
+                "eligible": False,
                 "result": f"You are {age} years old. You must be **18 or older** to vote. You can register once you turn 18!"
             })
     except ValueError:
@@ -257,7 +257,7 @@ def generate():
         errors.append("Name is missing")
     if not address:
         errors.append("Address is missing")
-    
+
     try:
         age = int(age_str)
         if age < 18:
@@ -271,16 +271,16 @@ def generate():
             "message": f"""
             ⚠️ <b>Your data is incomplete or invalid:</b><br>
             → {"<br>→ ".join(errors)}<br><br>
-            
+
             <b>Steps to correct info:</b><br>
             1. Ensure your age is 18 or above.<br>
             2. Provide your complete residential address.<br><br>
-            
+
             <b>📝 Document Checklist for Registration:</b><br>
             - Proof of Identity (Aadhar/PAN/Passport)<br>
             - Proof of Address (Utility Bill/Rent Agreement)<br>
             - Passport Size Photograph<br><br>
-            
+
             <b>🏢 Nearest Registration Office:</b><br>
             Mock Electoral Office, Downtown District-12
             """

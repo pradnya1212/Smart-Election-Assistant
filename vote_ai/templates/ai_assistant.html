@@ -34,10 +34,10 @@
         if(!msg) return;
         appendMsg('user', msg);
         input.value = '';
-        
+
         const typing = appendMsg('bot', 'Thinking...');
         const lang = localStorage.getItem('lang') || 'English';
-        
+
         try {
             const res = await fetch(`/ask?q=${encodeURIComponent(msg)}&lang=${lang}`);
             const data = await res.json();
