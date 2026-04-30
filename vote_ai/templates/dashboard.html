@@ -1,9 +1,13 @@
 {% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
 {% block content %}
 <div class="stats-grid">
     <div class="stat-card teal">
         <h3 data-i18n="voters">Voters</h3>
-        <div class="val" id="statVoters">250</div>
+        <div class="val" id="statVoters">0</div>
     </div>
     <div class="stat-card blue">
         <h3 data-i18n="voted">Votes Cast</h3>
@@ -35,20 +39,41 @@
     </div>
 </div>
 
+<div class="section-card">
+    <div class="section-title">
+        <h2 data-i18n="map_title">📍 Nearby Polling Station</h2>
+        <p style="color: #666; font-size: 0.85rem;">Interactive map to your assigned booth</p>
+    </div>
+    <div id="map" style="height: 300px; border-radius: 12px; border: 1px solid #ddd; background: #f8f9fa; z-index: 1;"></div>
+</div>
+
 <script>
     window.addEventListener('load', () => {
         if(user) {
             renderLocal();
             fetchStats();
+            initMap();
         }
     });
 
     window.addEventListener('languageChanged', renderLocal);
 
+    function initMap() {
+        // Simulated polling booth in Mumbai
+        const map = L.map('map').setView([19.0760, 72.8777], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        L.marker([19.0760, 72.8777]).addTo(map)
+            .bindPopup('<b>Your Assigned Station</b><br>Kendriya Vidyalaya, Mumbai.')
+            .openPopup();
+    }
+
     function renderLocal() {
         const lang = localStorage.getItem('lang') || 'English';
         const dict = translations[lang] || translations["English"];
-
+        
         document.getElementById('uiName').innerText = user.name;
         document.getElementById('uiLocation').innerText = user.state;
         const elig = document.getElementById('uiEligibility');
@@ -60,6 +85,7 @@
             elig.style.color = "#dc3545";
         }
     }
+
     async function fetchStats() {
         const res = await fetch('/api/stats');
         const data = await res.json();
