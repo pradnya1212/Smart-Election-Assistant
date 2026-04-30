@@ -18,7 +18,7 @@ except Exception as e:
 def ai_response(query, lang="English"):
     # Fallback mechanism if API key is invalid or not set
     if not client:
-        return _fallback_response(query)
+        return _fallback_response(query, lang)
 
     prompt = f"""
     You are VoteGuide AI, an expert, friendly Election Assistant.
@@ -42,20 +42,48 @@ def ai_response(query, lang="English"):
         return res.text if res.text else "Sorry, I couldn't generate a response."
     except errors.APIError as e:
         print(f"Gemini API Error: {e}")
-        return "⚠️ I'm currently running in offline mode. " + _fallback_response(query)
+        return _fallback_response(query, lang)
     except Exception as e:
         print(f"Unexpected Error: {e}")
-        return "⚠️ I'm currently running in offline mode. " + _fallback_response(query)
+        return _fallback_response(query, lang)
 
-def _fallback_response(query):
-    """Provides mock responses when AI is down to keep the app functional."""
+def _fallback_response(query, lang="English"):
+    """Provides mock responses when AI is down, with basic language support."""
     query = query.lower()
-    if "vote" in query or "how" in query:
-        return "🗳️ **How to Vote:**<br>1. Register for a Voter ID.<br>2. Check your name in the electoral roll.<br>3. Find your polling booth.<br>4. Carry a valid ID and cast your vote!"
-    elif "process" in query or "election" in query:
-        return "🏛️ **Election Process:**<br>Elections involve voter registration, candidate nomination, campaigning, voting day, and finally, counting of votes to declare the winner."
+    
+    # Dictionaries for basic translations
+    responses = {
+        "English": {
+            "vote": "🗳️ **How to Vote:**<br>1. Register for Voter ID.<br>2. Check name in electoral roll.<br>3. Find booth.<br>4. Cast vote!",
+            "process": "🏛️ **Election Process:**<br>Registration, campaigning, voting day, and counting of votes.",
+            "default": "🤖 **Offline Mode:**<br>I'm unable to connect to the AI brain. Please use the Check Eligibility button on the left!"
+        },
+        "Hindi": {
+            "vote": "🗳️ **वोट कैसे करें:**<br>1. वोटर आईडी के लिए रजिस्टर करें।<br>2. मतदाता सूची में नाम जांचें।<br>3. बूथ खोजें।<br>4. अपना वोट डालें!",
+            "process": "🏛️ **चुनाव प्रक्रिया:**<br>पंजीकरण, प्रचार, मतदान दिवस, और वोटों की गिनती।",
+            "default": "🤖 **ऑफ़लाइन मोड:**<br>मैं एआई से कनेक्ट नहीं हो पा रहा हूँ। कृपया बाईं ओर 'पात्रता जांचें' बटन का उपयोग करें!"
+        },
+        "Marathi": {
+            "vote": "🗳️ **मतदान कसे करावे:**<br>1. मतदार ओळखपत्रासाठी नोंदणी करा.<br>2. मतदार यादीत नाव तपासा.<br>3. बूथ शोधा.<br>4. मतदान करा!",
+            "process": "🏛️ **निवडणूक प्रक्रिया:**<br>नोंदणी, प्रचार, मतदानाचा दिवस आणि मतमोजणी.",
+            "default": "🤖 **ऑफलाइन मोड:**<br>मी एआयशी कनेक्ट होऊ शकत नाही. कृपया डावीकडील 'पात्रता तपासा' बटण वापरा!"
+        },
+        "Bengali": {
+            "vote": "🗳️ **কীভাবে ভোট দেবেন:**<br>1. ভোটার আইডির জন্য নিবন্ধন করুন।<br>2. ভোটার তালিকায় নাম চেক করুন।<br>3. বুথ খুঁজুন।<br>4. ভোট দিন!",
+            "process": "🏛️ **নির্বাচন প্রক্রিয়া:**<br>নিবন্ধন, প্রচার, ভোটের দিন, এবং ভোট গণনা।",
+            "default": "🤖 **অফলাইন মোড:**<br>আমি এআইয়ের সাথে সংযুক্ত হতে পারছি না। অনুগ্রহ করে বাম দিকের বোতাম ব্যবহার করুন!"
+        }
+    }
+    
+    # Ensure selected language exists in dictionary, fallback to English
+    lang_dict = responses.get(lang, responses["English"])
+    
+    if "vote" in query or "how" in query or "कसे" in query or "कैसे" in query or "কীভাবে" in query:
+        return lang_dict["vote"]
+    elif "process" in query or "election" in query or "निवडणूक" in query or "चुनाव" in query:
+        return lang_dict["process"]
     else:
-        return "🤖 **Offline Mode Active:**<br>I'm currently unable to connect to my AI brain. But you can still use the **Step Guide** and **Check Eligibility** buttons on the left!"
+        return lang_dict["default"]
 
 # 🗳️ GUIDE DATA
 STEPS_DATA = [
