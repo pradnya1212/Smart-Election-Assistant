@@ -159,6 +159,10 @@ def voting_list():
 def ai_assistant():
     return render_template("ai_assistant.html")
 
+@app.route("/education")
+def education():
+    return render_template("education.html")
+
 @app.route("/ask")
 def ask():
     q = request.args.get("q")

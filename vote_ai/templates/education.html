@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+    .timeline { position: relative; padding: 2rem 0; }
+    .timeline::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+    .step { position: relative; padding-left: 60px; margin-bottom: 2rem; }
+    .step-icon { position: absolute; left: 0; top: 0; width: 42px; height: 42px; background: var(--primary-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; z-index: 1; }
+    .step-card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--primary-blue); }
+    .step-card h3 { margin-bottom: 0.5rem; color: #334155; }
+    .step-card p { color: #64748b; font-size: 0.9rem; line-height: 1.6; }
+    
+    .resources-card { background: #f8f9fa; border: 1px dashed #dee2e6; padding: 1.5rem; border-radius: 8px; }
+    .resource-link { display: block; padding: 0.75rem; color: var(--primary-blue); text-decoration: none; border-bottom: 1px solid #eee; font-size: 0.9rem; font-weight: 600; }
+    .resource-link:hover { background: #fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <!-- Timeline -->
+    <div>
+        <div class="section-card">
+            <h2 style="margin-bottom: 1rem;">Election Process Education 📚</h2>
+            <p style="color: #666; margin-bottom: 2rem;">Learn the step-by-step journey of a democratic election in an interactive way.</p>
+            
+            <div class="timeline">
+                <div class="step">
+                    <div class="step-icon">1</div>
+                    <div class="step-card">
+                        <h3>Voter Registration</h3>
+                        <p>The first step is to ensure your name is in the official electoral roll. This involves submitting Form 6 to your local Electoral Registration Officer.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">2</div>
+                    <div class="step-card">
+                        <h3>Candidate Nomination</h3>
+                        <p>Qualified individuals file their nomination papers and security deposits. Their backgrounds are verified by the election commission.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">3</div>
+                    <div class="step-card">
+                        <h3>Campaigning Phase</h3>
+                        <p>Candidates share their vision through manifestos, rallies, and public debates. A "Model Code of Conduct" is enforced to ensure fairness.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">4</div>
+                    <div class="step-card">
+                        <h3>The Polling Day</h3>
+                        <p>Voters visit their assigned booths and cast their secret ballots using Electronic Voting Machines (EVMs).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Resources -->
+    <div>
+        <div class="section-card">
+            <h3 style="margin-bottom: 1.5rem; color: #334155;">Quick Resources</h3>
+            <div class="resources-card">
+                <a href="#" class="resource-link">[PPT] How to claim GCP Credits</a>
+                <a href="#" class="resource-link">[Link] Voter ID Status Check</a>
+                <a href="#" class="resource-link">[PUB] Election Safety Guidelines</a>
+                <a href="#" class="resource-link">[DOC] Candidate Handbooks</a>
+            </div>
+            <p style="font-size: 0.75rem; color: #999; margin-top: 1rem;">Official documentation provided by CivicMate AI Education Wing.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
