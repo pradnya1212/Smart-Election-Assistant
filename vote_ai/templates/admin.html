@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicMate AI - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; --text: #f8fafc; --success: #22c55e; --border: #334155; --danger: #ef4444; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 2rem; margin: 0; }
+        .container { max-width: 900px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        .btn-back { background: transparent; border: 1px solid var(--border); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-back:hover { background: rgba(255,255,255,0.05); }
+        h1 { font-size: 2rem; font-weight: 700; color: white; margin: 0; }
+        .card { background: var(--card); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 12px; border: 1px solid var(--border); }
+        .card h3 { margin-top: 0; margin-bottom: 1.5rem; color: var(--accent); }
+        
+        .candidate-row { display: flex; align-items: center; margin-bottom: 1rem; }
+        .candidate-name { width: 150px; font-weight: 600; }
+        .bar-container { flex: 1; background: rgba(255,255,255,0.05); height: 24px; border-radius: 12px; overflow: hidden; margin: 0 1rem; position: relative; border: 1px solid var(--border); }
+        .bar { background: var(--accent); height: 100%; width: 0%; transition: width 1s ease-in-out; }
+        .vote-count { width: 60px; text-align: right; font-weight: 700; color: var(--success); }
+        
+        .btn-danger { background: var(--danger); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-danger:hover { opacity: 0.8; }
+        .input-field { width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: white; margin-bottom: 1rem; box-sizing: border-box; outline: none; }
+        .input-field:focus { border-color: var(--accent); }
+        .btn-primary { width: 100%; background: var(--accent); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="container" id="loginView">
+        <div class="header" style="border: none; justify-content: center;">
+            <a href="/dashboard" class="btn-back" style="position: absolute; left: 2rem; top: 2rem;">&larr; Back to App</a>
+        </div>
+        <div class="card" style="max-width: 400px; margin: 60px auto; text-align: center;">
+            <h2 style="margin-bottom: 0.5rem;">🔒 Admin Access</h2>
+            <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem;">Enter password to view live election results</p>
+            <input type="password" id="adminPwd" class="input-field" placeholder="Enter Password (admin123)">
+            <button class="btn-primary" onclick="login()">Login to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div class="container" id="dashboardView" style="display: none;">
+        <div class="header">
+            <h1>📊 Live Election Results</h1>
+            <div>
+                <button class="btn-danger" onclick="resetVotes()">Reset Votes</button>
+                <a href="/dashboard" class="btn-back" style="margin-left: 10px;">Exit</a>
+            </div>
+        </div>
+
+        {% for cat, candidates in data %}
+        <div class="card">
+            <h3>{{ cat[1] }}</h3>
+            {% set total = 0 %}
+            {% for c in candidates %}
+                {% set total = total + c[3] %}
+            {% endfor %}
+            
+            {% for c in candidates %}
+            {% set width = 0 %}
+            {% if total > 0 %}
+                {% set width = (c[3] / total) * 100 %}
+            {% endif %}
+            <div class="candidate-row">
+                <div class="candidate-name">👤 {{ c[1] }}</div>
+                <div class="bar-container">
+                    <div class="bar" style="width: {{ width }}%;"></div>
+                </div>
+                <div class="vote-count">{{ c[3] }} Votes</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function login() {
+            const pwd = document.getElementById("adminPwd").value;
+            // Basic client side validation for demonstration
+            if(pwd === "admin123") {
+                document.getElementById("loginView").style.display = "none";
+                document.getElementById("dashboardView").style.display = "block";
+                
+                // Animate bars on load
+                const bars = document.querySelectorAll('.bar');
+                bars.forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => { bar.style.width = width; }, 100);
+                });
+            } else {
+                alert("Incorrect password! Try 'admin123'");
+            }
+        }
+
+        function resetVotes() {
+            if(!confirm("⚠️ WARNING: Are you sure you want to reset all votes to 0? This action cannot be undone.")) return;
+            
+            fetch("/api/reset_votes", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({password: "admin123"})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    alert("Votes have been reset successfully.");
+                    location.reload();
+                } else {
+                    alert("Failed to reset votes: Unauthorized.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

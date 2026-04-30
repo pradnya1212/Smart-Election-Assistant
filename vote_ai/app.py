@@ -238,6 +238,31 @@ def vote():
     conn.close()
     return jsonify({"success": True})
 
+@app.route("/admin")
+def admin():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM categories")
+    categories = c.fetchall()
+    data = []
+    for cat in categories:
+        c.execute("SELECT * FROM candidates WHERE category_id=?", (cat[0],))
+        candidates = c.fetchall()
+        data.append((cat, candidates))
+    conn.close()
+    return render_template("admin.html", data=data)
+
+@app.route("/api/reset_votes", methods=["POST"])
+def reset_votes():
+    if request.json.get("password") != "admin123":
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("UPDATE candidates SET votes = 0")
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port, threaded=True)
