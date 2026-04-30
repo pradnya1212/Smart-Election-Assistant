@@ -125,7 +125,17 @@ def home():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("index.html")
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM categories")
+    categories = c.fetchall()
+    data = []
+    for cat in categories:
+        c.execute("SELECT * FROM candidates WHERE category_id=?", (cat[0],))
+        candidates = c.fetchall()
+        data.append((cat, candidates))
+    conn.close()
+    return render_template("index.html", data=data)
 
 @app.route("/ask")
 def ask():
