@@ -238,6 +238,18 @@ def vote():
     conn.close()
     return jsonify({"success": True})
 
+@app.route("/api/stats")
+def stats():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("SELECT SUM(votes) FROM candidates")
+    total_votes = c.fetchone()[0] or 0
+    conn.close()
+    return jsonify({
+        "total_votes": total_votes,
+        "total_voters": 250 # Simulated total voter population
+    })
+
 @app.route("/admin")
 def admin():
     conn = sqlite3.connect("database.db")

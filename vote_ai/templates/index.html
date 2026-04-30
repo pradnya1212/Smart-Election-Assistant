@@ -23,11 +23,25 @@
 
         /* --- Layout --- */
         .sidebar {
-            width: 320px; background-color: var(--bg-card);
+            width: 300px; background-color: var(--bg-card);
             border-right: 1px solid var(--border); padding: 2rem;
-            display: flex; flex-direction: column; gap: 2rem;
+            display: flex; flex-direction: column; gap: 1.5rem;
         }
-        .main { flex: 1; display: flex; flex-direction: column; height: 100vh; }
+        .main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
+
+        /* --- Stats Cards --- */
+        .stats-grid { display: flex; gap: 1.5rem; padding: 2rem 2rem 0 2rem; }
+        .stat-card {
+            flex: 1; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(20, 184, 166, 0.05));
+            border-left: 4px solid #14b8a6;
+        }
+        .stat-card.blue {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05));
+            border-left: 4px solid #2563eb;
+        }
+        .stat-card h3 { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 1px; }
+        .stat-card h2 { font-size: 2rem; font-weight: 700; color: white; }
 
         /* --- Profile & Tasks --- */
         .profile-card {
@@ -154,6 +168,18 @@
 
     <!-- RIGHT MAIN CHAT -->
     <main class="main">
+        <!-- Stats Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Population</h3>
+                <h2 id="statVoters">250</h2>
+            </div>
+            <div class="stat-card blue">
+                <h3>Total Voted</h3>
+                <h2 id="statVoted">0</h2>
+            </div>
+        </div>
+
         <div class="chat-container" id="chat" role="log" aria-live="polite"></div>
         <div class="input-area">
             <input type="text" id="userInput" class="input-field" style="margin: 0;" placeholder="Ask anything..." aria-label="Ask a question" onkeypress="handleKeyPress(event)">
@@ -165,15 +191,23 @@
         let user = null;
         window.onload = () => {
             const saved = localStorage.getItem("user");
-            if (!saved) {
-                window.location.href = "/";
-                return;
+            if (saved) {
+                user = JSON.parse(saved);
+                document.getElementById('onboardingModal').classList.add('hidden');
+                updateDashboard();
+                fetchStats(); // Load live stats
+                appendMessage('bot', `Welcome back, ${user.name}! I am CivicMate AI. How can I assist you with your elections today?`);
             }
-            user = JSON.parse(saved);
-            document.getElementById('onboardingModal').classList.add('hidden');
-            updateDashboard();
-            appendMessage('bot', `Welcome back, ${user.name}! I am CivicMate AI. How can I assist you with your elections today?`);
         };
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('statVoters').innerText = data.total_voters;
+                document.getElementById('statVoted').innerText = data.total_votes;
+            } catch(e) { console.error("Stats fetch failed"); }
+        }
 
         function saveUser() {
             const name = document.getElementById('obName').value;
