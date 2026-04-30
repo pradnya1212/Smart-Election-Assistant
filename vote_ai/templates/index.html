@@ -118,14 +118,16 @@
             🗳️ CivicMate <span style="color: var(--accent);">AI</span>
         </h2>
         
-        <!-- Multi-Language Widget -->
-        <div id="google_translate_element" style="margin-bottom: 1rem;"></div>
-        <script type="text/javascript">
-            function googleTranslateElementInit() {
-                new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'hi,mr,ta,te,bn,gu,kn,ml,ur,en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
-            }
-        </script>
-        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <!-- Native AI Language Selector -->
+        <div class="input-group" style="margin-bottom: 1.5rem;">
+            <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">🌐 AI Language</label>
+            <select id="appLang" class="input-field" style="margin-bottom: 0;">
+                <option value="English">🇬🇧 English</option>
+                <option value="Hindi">🇮🇳 Hindi</option>
+                <option value="Marathi">🇮🇳 Marathi</option>
+                <option value="Bengali">🇮🇳 Bengali</option>
+            </select>
+        </div>
 
         <div class="profile-card" id="profileCard">
             <h3 style="margin-bottom: 0.5rem;">Hello <span id="uiName"></span> 👋</h3>
@@ -242,9 +244,10 @@
                 return;
             }
 
+            const lang = document.getElementById('appLang').value;
             const typing = appendMessage('bot', 'Thinking...');
             try {
-                const res = await fetch(`/ask?q=${encodeURIComponent(msg)}`);
+                const res = await fetch(`/ask?q=${encodeURIComponent(msg)}&lang=${encodeURIComponent(lang)}`);
                 const data = await res.json();
                 typing.innerHTML = formatMarkdown(data.message);
             } catch {
@@ -274,7 +277,12 @@
                 voiceBtn.innerHTML = "🔊";
                 voiceBtn.style.cssText = "background:transparent; border:none; cursor:pointer; margin-left:10px; font-size:1.2rem; align-self:flex-start; margin-top:10px;";
                 voiceBtn.onclick = () => {
-                    const speech = new SpeechSynthesisUtterance(text.replace(/\*\*/g, ""));
+                    const speech = new SpeechSynthesisUtterance(text.replace(/\*\*/g, "").replace(/<br>/g, " "));
+                    
+                    // Assign correct voice accent based on language
+                    const langMap = { "English": "en-IN", "Hindi": "hi-IN", "Marathi": "mr-IN", "Bengali": "bn-IN" };
+                    speech.lang = langMap[document.getElementById('appLang').value] || "en-IN";
+                    
                     window.speechSynthesis.speak(speech);
                 };
                 wrapper.appendChild(msgObj);

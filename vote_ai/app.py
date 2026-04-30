@@ -15,7 +15,7 @@ except Exception as e:
     client = None
     print(f"GenAI Client Init Error: {e}")
 
-def ai_response(query):
+def ai_response(query, lang="English"):
     # Fallback mechanism if API key is invalid or not set
     if not client:
         return _fallback_response(query)
@@ -27,7 +27,9 @@ def ai_response(query):
     1. Answer clearly and concisely in simple language.
     2. Use bullet points and emojis to make the response engaging.
     3. If the user asks about election procedures, guide them step-by-step.
+    3. If the user asks about election procedures, guide them step-by-step.
     4. Stay neutral and strictly informative.
+    5. CRITICAL: You MUST respond strictly in the language: {lang}.
     
     User Query: {query}
     """
@@ -76,11 +78,11 @@ def dashboard():
 
 @app.route("/ask")
 def ask():
-    q = request.args.get("q", "")
+    q = request.args.get("q")
+    lang = request.args.get("lang", "English")
     if not q:
         return jsonify({"message": "Please ask a question."})
-    
-    response_text = ai_response(q)
+    response_text = ai_response(q, lang)
     # Convert newlines to HTML breaks for better UI formatting if not already formatted
     if "<br>" not in response_text and "<ul>" not in response_text:
         response_text = response_text.replace("\n", "<br>")
