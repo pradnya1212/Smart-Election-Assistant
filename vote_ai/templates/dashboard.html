@@ -11,6 +11,8 @@
     </div>
 </div>
 
+<h1 style="margin-bottom: 1.5rem; color: #334155;">Welcome, <span id="uiName">User</span> 👋</h1>
+
 <div class="section-card">
     <div class="section-title">
         <h2>Dashboard Summary</h2>
@@ -36,6 +38,7 @@
 <script>
     window.addEventListener('load', () => {
         if(user) {
+            document.getElementById('uiName').innerText = user.name;
             document.getElementById('uiLocation').innerText = user.state;
             const elig = document.getElementById('uiEligibility');
             if(user.age >= 18) {
