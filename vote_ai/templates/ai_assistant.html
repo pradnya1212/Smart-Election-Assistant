@@ -13,17 +13,17 @@
 {% block content %}
 <div class="section-card">
     <div class="section-title">
-        <h2>🤖 AI Election Assistant</h2>
-        <p style="color: #666; font-size: 0.85rem;">Ask anything about the voting process</p>
+        <h2 data-i18n="ai_title">🤖 AI Election Assistant</h2>
+        <p style="color: #666; font-size: 0.85rem;" data-i18n="ai_sub">Ask anything about the voting process</p>
     </div>
     <div class="chat-container" id="chat">
         <div class="msg-wrapper">
-            <div class="msg bot">Hello! I am your AI assistant. How can I help you today?</div>
+            <div class="msg bot" data-i18n="bot_hello">Hello! I am your AI assistant. How can I help you today?</div>
         </div>
     </div>
     <div style="display: flex; gap: 0.5rem;">
-        <input type="text" id="userInput" class="input-field" placeholder="Type your query..." onkeypress="handleKeyPress(event)" style="margin-bottom: 0;">
-        <button class="btn-primary" onclick="sendMessage()">Send</button>
+        <input type="text" id="userInput" class="input-field" placeholder="..." onkeypress="handleKeyPress(event)" style="margin-bottom: 0;">
+        <button class="btn-primary" onclick="sendMessage()" data-i18n="send">Send</button>
     </div>
 </div>
 
