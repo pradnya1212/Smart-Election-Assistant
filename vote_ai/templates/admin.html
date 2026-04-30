@@ -37,20 +37,29 @@
             <a href="/dashboard" class="btn-back" style="position: absolute; left: 2rem; top: 2rem;">&larr; Back to App</a>
         </div>
         <div class="card" style="max-width: 400px; margin: 60px auto; text-align: center;">
-            <h2 style="margin-bottom: 0.5rem;">🔒 Admin Access</h2>
-            <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem;">Enter password to view live election results</p>
-            <input type="password" id="adminPwd" class="input-field" placeholder="Enter Password (admin123)">
-            <button class="btn-primary" onclick="login()">Login to Dashboard</button>
+            <h2 style="margin-bottom: 0.5rem;" data-i18n="admin_access">🔒 Admin Access</h2>
+            <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem;" data-i18n="admin_pwd_sub">Enter password to view live election results</p>
+            <input type="password" id="adminPwd" class="input-field" placeholder="admin123">
+            <button class="btn-primary" onclick="login()" data-i18n="login_btn">Login to Dashboard</button>
+            
+            <div style="margin-top: 1.5rem;">
+                <select id="adminLang" style="width: 100%; padding: 0.5rem; border-radius: 8px; background: var(--bg); color: white; border: 1px solid var(--border);" onchange="updateLanguage(this.value)">
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Marathi">Marathi</option>
+                    <option value="Bengali">Bengali</option>
+                </select>
+            </div>
         </div>
     </div>
 
     <!-- Dashboard Screen -->
     <div class="container" id="dashboardView" style="display: none;">
         <div class="header">
-            <h1>📊 Live Election Results</h1>
+            <h1 data-i18n="admin_title">📊 Live Election Results</h1>
             <div>
-                <button class="btn-danger" onclick="resetVotes()">Reset Votes</button>
-                <a href="/dashboard" class="btn-back" style="margin-left: 10px;">Exit</a>
+                <button class="btn-danger" onclick="resetVotes()" data-i18n="reset">Reset Votes</button>
+                <a href="/dashboard" class="btn-back" style="margin-left: 10px;" data-i18n="exit">Exit</a>
             </div>
         </div>
 
@@ -81,6 +90,28 @@
     </div>
 
     <script>
+        const translations = {
+            "English": { "admin_access": "🔒 Admin Access", "admin_pwd_sub": "Enter password to view live results", "login_btn": "Login to Dashboard", "admin_title": "📊 Live Election Results", "reset": "Reset Votes", "exit": "Exit", "votes": "Votes" },
+            "Marathi": { "admin_access": "🔒 प्रशासक प्रवेश", "admin_pwd_sub": "थेट निकाल पाहण्यासाठी पासवर्ड टाका", "login_btn": "डॅशबोर्डवर लॉगिन करा", "admin_title": "📊 थेट निवडणूक निकाल", "reset": "मते रीसेट करा", "exit": "बाहेर पडा", "votes": "मते" },
+            "Hindi": { "admin_access": "🔒 एडमिन एक्सेस", "admin_pwd_sub": "लाइव परिणाम देखने के लिए पासवर्ड डालें", "login_btn": "डैशबोर्ड पर लॉगिन करें", "admin_title": "📊 लाइव चुनाव परिणाम", "reset": "वोट रीसेट करें", "exit": "बाहर निकलें", "votes": "वोट" },
+            "Bengali": { "admin_access": "🔒 অ্যাডমিন অ্যাক্সেস", "admin_pwd_sub": "লাইভ ফলাফল দেখতে পাসওয়ার্ড লিখুন", "login_btn": "ড্যাশবোর্ডে লগইন করুন", "admin_title": "📊 লাইভ নির্বাচনের ফলাফল", "reset": "ভোট রিসেট করুন", "exit": "প্রস্থান", "votes": "ভোট" }
+        };
+
+        function updateLanguage(lang) {
+            localStorage.setItem('lang', lang);
+            const dict = translations[lang] || translations["English"];
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                if (dict[key]) el.innerText = dict[key];
+            });
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('lang') || 'English';
+            document.getElementById('adminLang').value = saved;
+            updateLanguage(saved);
+        };
+
         function login() {
             const pwd = document.getElementById("adminPwd").value;
             // Basic client side validation for demonstration
