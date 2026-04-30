@@ -59,14 +59,30 @@
     window.addEventListener('languageChanged', renderLocal);
 
     function initMap() {
-        // Simulated polling booth in Mumbai
-        const map = L.map('map').setView([19.0760, 72.8777], 14);
+        const locations = {
+            'Sangli': { lat: 16.8524, lon: 74.5815, name: 'Sangli City Station' },
+            'Jath': { lat: 17.0487, lon: 75.2091, name: 'Jath Polling Booth, Sangli' },
+            'Mumbai': { lat: 19.0760, lon: 72.8777, name: 'Mumbai Central Station' },
+            'Pune': { lat: 18.5204, lon: 73.8567, name: 'Pune City Station' }
+        };
+
+        const rawLoc = user.state || 'Mumbai';
+        // Handle "Sangli Jath" or "Jath" or "Sangli"
+        let locKey = 'Mumbai';
+        if (rawLoc.toLowerCase().includes('jath')) locKey = 'Jath';
+        else if (rawLoc.toLowerCase().includes('sangli')) locKey = 'Sangli';
+        else if (rawLoc.toLowerCase().includes('pune')) locKey = 'Pune';
+        else if (rawLoc.toLowerCase().includes('mumbai')) locKey = 'Mumbai';
+
+        const loc = locations[locKey] || locations['Mumbai'];
+
+        const map = L.map('map').setView([loc.lat, loc.lon], 14);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
-        L.marker([19.0760, 72.8777]).addTo(map)
-            .bindPopup('<b>Your Assigned Station</b><br>Kendriya Vidyalaya, Mumbai.')
+        L.marker([loc.lat, loc.lon]).addTo(map)
+            .bindPopup(`<b>Assigned Station</b><br>${loc.name}`)
             .openPopup();
     }
 
