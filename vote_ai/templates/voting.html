@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicMate AI - Voting System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; --text: #f8fafc; --success: #22c55e; --border: #334155; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 2rem; margin: 0; }
+        .container { max-width: 800px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .btn-back { background: transparent; border: 1px solid var(--border); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-back:hover { background: rgba(255,255,255,0.05); }
+        h1 { font-size: 2rem; font-weight: 700; color: white; margin: 0; }
+        .card { background: var(--card); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 12px; border: 1px solid var(--border); }
+        .card h3 { margin-top: 0; margin-bottom: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; font-size: 1.25rem; }
+        .candidate { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; border: 1px solid var(--border); }
+        .candidate span { font-weight: 500; font-size: 1.1rem; }
+        .btn-vote { background: var(--accent); color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-vote:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-voted { background: var(--success); cursor: default; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗳️ Live Election Gateway</h1>
+            <a href="/dashboard" class="btn-back">&larr; Back to Dashboard</a>
+        </div>
+        
+        {% for cat, candidates in data %}
+        <div class="card">
+            <h3>{{ cat[1] }}</h3>
+            {% for c in candidates %}
+            <div class="candidate">
+                <span>👤 {{ c[1] }}</span>
+                <button class="btn-vote" id="btn-{{ c[0] }}" onclick="castVote({{ c[0] }})">Vote</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function castVote(id) {
+            const btn = document.getElementById("btn-" + id);
+            if (btn.classList.contains("btn-voted")) return;
+            
+            btn.innerHTML = "Voting...";
+            btn.disabled = true;
+
+            fetch("/vote?id=" + id)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    btn.innerHTML = "✔ Voted";
+                    btn.classList.add("btn-voted");
+                    btn.classList.remove("btn-vote");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import sqlite3
 from flask import Flask, render_template, request, jsonify
 from google import genai
 from google.genai import errors
@@ -14,6 +15,28 @@ try:
 except Exception as e:
     client = None
     print(f"GenAI Client Init Error: {e}")
+
+def init_db():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS candidates (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category_id INTEGER, votes INTEGER DEFAULT 0)''')
+    
+    # Seed data if empty
+    c.execute("SELECT COUNT(*) FROM categories")
+    if c.fetchone()[0] == 0:
+        c.execute("INSERT INTO categories (name) VALUES ('Student Chairman')")
+        c.execute("INSERT INTO categories (name) VALUES ('Student Vice-Chairman')")
+        c.execute("INSERT INTO categories (name) VALUES ('Executive Members')")
+        c.execute("INSERT INTO candidates (name, category_id) VALUES ('Kamal',1)")
+        c.execute("INSERT INTO candidates (name, category_id) VALUES ('Rajni',1)")
+        c.execute("INSERT INTO candidates (name, category_id) VALUES ('Shivaji',2)")
+        c.execute("INSERT INTO candidates (name, category_id) VALUES ('MGR',2)")
+        c.execute("INSERT INTO candidates (name, category_id) VALUES ('Vijay',3)")
+    conn.commit()
+    conn.close()
+
+init_db()
 
 def ai_response(query, lang="English"):
     # Fallback mechanism if API key is invalid or not set
@@ -190,6 +213,30 @@ def generate():
         "success": True,
         "message": f"✅ <b>Voter ID Generated Successfully</b><br><br><b>Name:</b> {name}<br><b>Voter ID:</b> {voter_id}<br><b>Booth:</b> District-12<br><b>Status:</b> Active<br><br><b>📝 What to carry on Election Day:</b><br>- Printout of this Voter ID<br>- Original Aadhar Card/PAN<br><br><small><i>Note: This system simulates voter ID generation for educational purposes.</i></small>"
     })
+
+@app.route("/voting")
+def voting():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM categories")
+    categories = c.fetchall()
+    data = []
+    for cat in categories:
+        c.execute("SELECT * FROM candidates WHERE category_id=?", (cat[0],))
+        candidates = c.fetchall()
+        data.append((cat, candidates))
+    conn.close()
+    return render_template("voting.html", data=data)
+
+@app.route("/vote")
+def vote():
+    cid = request.args.get("id")
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("UPDATE candidates SET votes = votes + 1 WHERE id=?", (cid,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
