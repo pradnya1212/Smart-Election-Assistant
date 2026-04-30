@@ -57,10 +57,11 @@
         {% for cat, candidates in data %}
         <div class="card">
             <h3>{{ cat[1] }}</h3>
-            {% set total = 0 %}
+            {% set ns = namespace(total=0) %}
             {% for c in candidates %}
-                {% set total = total + c[3] %}
+                {% set ns.total = ns.total + c[3] %}
             {% endfor %}
+            {% set total = ns.total %}
             
             {% for c in candidates %}
             {% set width = 0 %}
