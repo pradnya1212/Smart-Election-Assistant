@@ -17,13 +17,12 @@
         .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.1); color: white; }
         .nav-link.active { border-left: 4px solid var(--primary-blue); }
 
-        /* Main Content Area */
+        /* Main Content */
         .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         .header { background: #343a40; padding: 0.75rem 2rem; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
         .content { padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
-        /* Dashboard Cards */
+        /* Stats Cards */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { padding: 2rem; border-radius: 4px; color: white; display: flex; justify-content: space-between; align-items: flex-end; }
         .stat-card.teal { background: var(--primary-teal); }
@@ -31,7 +30,7 @@
         .stat-card h3 { font-size: 1.2rem; opacity: 0.9; }
         .stat-card .val { font-size: 2.5rem; font-weight: 700; }
 
-        /* Election Table Style */
+        /* Section Cards */
         .section-card { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem; }
         .section-title { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
         .category-title { color: #444; font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 1rem 0; text-align: center; }
@@ -43,16 +42,20 @@
         .vote-badge { background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: none; }
         .vote-badge:hover { background: #218838; }
 
-        /* AI Assistant Integrated */
-        .chat-container { height: 400px; overflow-y: auto; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 1rem; }
-        .msg { max-width: 80%; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; }
+        /* AI Assistant */
+        .chat-container { height: 450px; overflow-y: auto; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 80%; }
+        .msg { padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; position: relative; }
         .msg.bot { background: #f1f5f9; color: #334155; align-self: flex-start; border: 1px solid #e2e8f0; }
         .msg.user { background: var(--primary-blue); color: white; align-self: flex-end; }
+        .voice-btn { cursor: pointer; font-size: 1rem; color: var(--primary-blue); margin-top: 5px; align-self: flex-start; }
+        
         .input-group { display: flex; gap: 0.5rem; }
         .input-field { flex: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; outline: none; }
         .btn-send { background: var(--primary-blue); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
         .hidden { display: none; }
+        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -63,12 +66,15 @@
         <div class="nav-link active" onclick="showTab('home', this)">🏠 Home</div>
         <div class="nav-link" onclick="showTab('voting', this)">📋 Voting List</div>
         <div class="nav-link" onclick="showTab('ai', this)">🤖 AI Assistant</div>
+        <div class="nav-link" onclick="window.location.href='/admin'">📊 Admin Results</div>
+        
         <div style="margin-top: auto; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
             <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.5rem;">LANGUAGE</div>
             <select id="appLang" style="width: 100%; padding: 0.5rem; border-radius: 4px; background: #444; color: white; border: none;">
                 <option value="English">English</option>
                 <option value="Hindi">Hindi</option>
                 <option value="Marathi">Marathi</option>
+                <option value="Bengali">Bengali</option>
             </select>
         </div>
     </aside>
@@ -76,10 +82,10 @@
     <!-- Main -->
     <main class="main">
         <header class="header">
-            <div style="font-size: 0.9rem; font-weight: 600;">Election Portal v2.0</div>
-            <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.85rem;">
-                <span id="userNameDisplay">Administrator</span>
-                <button onclick="logout()" style="background: transparent; border: none; color: white; cursor: pointer;">🚪 Logout</button>
+            <div style="font-size: 0.9rem; font-weight: 600;">Election Portal v2.1</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span id="userNameDisplay" style="font-size: 0.85rem;">Administrator</span>
+                <button class="btn-logout" onclick="logout()">Logout</button>
             </div>
         </header>
 
@@ -100,21 +106,20 @@
             <section id="tab-home" class="tab-content">
                 <div class="section-card">
                     <div class="section-title">
-                        <h2>Personalized Dashboard</h2>
-                        <p style="color: #666; font-size: 0.85rem;">Welcome back to your voting companion</p>
+                        <h2>Voter Identity</h2>
+                        <p style="color: #666; font-size: 0.8rem;">Status: <span id="uiEligibility" style="font-weight: 700;"></span></p>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                         <div>
-                            <h4 style="margin-bottom: 1rem; color: #334155;">Status Check</h4>
-                            <p id="uiEligibility" style="font-weight: 700; font-size: 1.2rem;"></p>
-                            <p style="color: #666; margin-top: 0.5rem;">Location: <span id="uiLocation"></span></p>
+                            <h4 style="margin-bottom: 1rem; color: #334155;">Location</h4>
+                            <p style="font-size: 1.1rem; font-weight: 600;">📍 <span id="uiLocation"></span></p>
                         </div>
                         <div>
-                            <h4 style="margin-bottom: 1rem; color: #334155;">Voter Checklist</h4>
-                            <ul style="list-style: none; font-size: 0.9rem; color: #444;">
-                                <li style="margin-bottom: 0.5rem;">✅ Eligibility verified</li>
-                                <li style="margin-bottom: 0.5rem;">⏳ Voter ID Registration</li>
-                                <li style="margin-bottom: 0.5rem;">⏳ Polling Booth Found</li>
+                            <h4 style="margin-bottom: 1rem; color: #334155;">Voting Progress</h4>
+                            <ul style="list-style: none; font-size: 0.9rem;">
+                                <li>✅ Eligibility Checked</li>
+                                <li>⏳ Voter ID Generated</li>
+                                <li>⏳ Booth Allocated</li>
                             </ul>
                         </div>
                     </div>
@@ -126,16 +131,15 @@
                 <div class="section-card">
                     <div class="section-title">
                         <h2>Student Election</h2>
-                        <p style="color: #666; font-size: 0.8rem;">Official Polling List</p>
+                        <p style="color: #666; font-size: 0.8rem;">Candidate Polls</p>
                     </div>
-                    
                     {% for cat, candidates in data %}
                     <div class="category-title">{{ cat[1] }}</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         {% for c in candidates %}
                         <div class="candidate-row">
                             <div class="candidate-info">
-                                <div class="avatar">IMG</div>
+                                <div class="avatar">👤</div>
                                 <span class="candidate-name">{{ c[1] }}</span>
                             </div>
                             <button class="vote-badge" id="btn-{{ c[0] }}" onclick="castVote({{ c[0] }})">Vote</button>
@@ -150,14 +154,16 @@
             <section id="tab-ai" class="tab-content hidden">
                 <div class="section-card">
                     <div class="section-title">
-                        <h2>🤖 AI Election Assistant</h2>
-                        <p style="color: #666; font-size: 0.85rem;">Ask anything about the voting process</p>
+                        <h2>🤖 Multi-Language AI Assistant</h2>
+                        <p style="color: #666; font-size: 0.85rem;">Select your language in the sidebar for native responses</p>
                     </div>
                     <div class="chat-container" id="chat">
-                        <div class="msg bot">Hello! I am CivicMate AI. How can I help you today?</div>
+                        <div class="msg-wrapper">
+                            <div class="msg bot">Hello! I am your AI assistant. Select a language and ask me anything about voting.</div>
+                        </div>
                     </div>
                     <div class="input-group">
-                        <input type="text" id="userInput" class="input-field" placeholder="Type your query..." onkeypress="handleKeyPress(event)">
+                        <input type="text" id="userInput" class="input-field" placeholder="Ask a question..." onkeypress="handleKeyPress(event)">
                         <button class="btn-send" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
@@ -173,12 +179,13 @@
             document.getElementById('userNameDisplay').innerText = user.name;
             document.getElementById('uiLocation').innerText = user.state;
             
+            const elig = document.getElementById('uiEligibility');
             if(user.age >= 18) {
-                document.getElementById('uiEligibility').innerText = "✅ Eligible to Vote";
-                document.getElementById('uiEligibility').style.color = "#28a745";
+                elig.innerText = "✅ Eligible to Vote";
+                elig.style.color = "#28a745";
             } else {
-                document.getElementById('uiEligibility').innerText = "❌ Not Eligible";
-                document.getElementById('uiEligibility').style.color = "#dc3545";
+                elig.innerText = "❌ Not Eligible";
+                elig.style.color = "#dc3545";
             }
             fetchStats();
         };
@@ -191,9 +198,11 @@
         }
 
         async function fetchStats() {
-            const res = await fetch('/api/stats');
-            const data = await res.json();
-            document.getElementById('statVoted').innerText = data.total_votes;
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('statVoted').innerText = data.total_votes;
+            } catch(e) {}
         }
 
         async function castVote(id) {
@@ -218,18 +227,44 @@
             
             const typing = appendMsg('bot', 'Thinking...');
             const lang = document.getElementById('appLang').value;
-            const res = await fetch(`/ask?q=${encodeURIComponent(msg)}&lang=${lang}`);
-            const data = await res.json();
-            typing.innerHTML = data.message;
+            
+            try {
+                const res = await fetch(`/ask?q=${encodeURIComponent(msg)}&lang=${lang}`);
+                const data = await res.json();
+                typing.innerHTML = data.message;
+                addVoiceBtn(typing, data.message);
+            } catch(e) {
+                typing.innerHTML = "⚠️ Service unavailable. Please try again.";
+            }
         }
 
         function appendMsg(sender, text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'msg-wrapper';
+            if(sender === 'user') wrapper.style.alignSelf = 'flex-end';
+            
             const div = document.createElement('div');
             div.className = `msg ${sender}`;
             div.innerHTML = text;
-            document.getElementById('chat').appendChild(div);
-            document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+            wrapper.appendChild(div);
+            
+            const chat = document.getElementById('chat');
+            chat.appendChild(wrapper);
+            chat.scrollTop = chat.scrollHeight;
             return div;
+        }
+
+        function addVoiceBtn(msgDiv, text) {
+            const btn = document.createElement('div');
+            btn.className = 'voice-btn';
+            btn.innerHTML = '🔊 Speak';
+            btn.onclick = () => {
+                const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]*>?/gm, ''));
+                const langMap = { "English": "en-IN", "Hindi": "hi-IN", "Marathi": "mr-IN", "Bengali": "bn-IN" };
+                utterance.lang = langMap[document.getElementById('appLang').value] || "en-IN";
+                window.speechSynthesis.speak(utterance);
+            };
+            msgDiv.parentNode.appendChild(btn);
         }
 
         function handleKeyPress(e) { if(e.key === 'Enter') sendMessage(); }
