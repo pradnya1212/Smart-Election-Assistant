@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoteAssist Pro</title>
+    <title>CivicMate AI Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -115,8 +115,18 @@
     <!-- LEFT SIDEBAR -->
     <nav class="sidebar" aria-label="Dashboard">
         <h2 style="font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 0.5rem;">
-            🗳️ VoteAssist <span style="color: var(--accent);">Pro</span>
+            🗳️ CivicMate <span style="color: var(--accent);">AI</span>
         </h2>
+        
+        <!-- Multi-Language Widget -->
+        <div id="google_translate_element" style="margin-bottom: 1rem;"></div>
+        <script type="text/javascript">
+            function googleTranslateElementInit() {
+                new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'hi,mr,ta,te,bn,gu,kn,ml,ur,en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+            }
+        </script>
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
         <div class="profile-card" id="profileCard">
             <h3 style="margin-bottom: 0.5rem;">Hello <span id="uiName"></span> 👋</h3>
             <p id="uiEligibility" style="font-weight: 600; margin-bottom: 0.5rem;"></p>
@@ -151,12 +161,14 @@
         let user = null;
         window.onload = () => {
             const saved = localStorage.getItem("user");
-            if (saved) {
-                user = JSON.parse(saved);
-                document.getElementById('onboardingModal').classList.add('hidden');
-                updateDashboard();
-                appendMessage('bot', `Welcome back, ${user.name}! I am your personalized voting companion.`);
+            if (!saved) {
+                window.location.href = "/";
+                return;
             }
+            user = JSON.parse(saved);
+            document.getElementById('onboardingModal').classList.add('hidden');
+            updateDashboard();
+            appendMessage('bot', `Welcome back, ${user.name}! I am CivicMate AI. How can I assist you with your elections today?`);
         };
 
         function saveUser() {
@@ -255,7 +267,22 @@
             const msgObj = document.createElement("div");
             msgObj.className = `msg ${sender}`;
             msgObj.innerHTML = formatMarkdown(text);
-            wrapper.appendChild(msgObj);
+            
+            // Add Voice Button for bot messages
+            if(sender === 'bot') {
+                const voiceBtn = document.createElement("button");
+                voiceBtn.innerHTML = "🔊";
+                voiceBtn.style.cssText = "background:transparent; border:none; cursor:pointer; margin-left:10px; font-size:1.2rem; align-self:flex-start; margin-top:10px;";
+                voiceBtn.onclick = () => {
+                    const speech = new SpeechSynthesisUtterance(text.replace(/\*\*/g, ""));
+                    window.speechSynthesis.speak(speech);
+                };
+                wrapper.appendChild(msgObj);
+                wrapper.appendChild(voiceBtn);
+            } else {
+                wrapper.appendChild(msgObj);
+            }
+
             document.getElementById('chat').appendChild(wrapper);
             document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
             return msgObj;

@@ -68,6 +68,10 @@ STEPS_DATA = [
 
 @app.route("/")
 def home():
+    return render_template("home.html")
+
+@app.route("/dashboard")
+def dashboard():
     return render_template("index.html")
 
 @app.route("/ask")
