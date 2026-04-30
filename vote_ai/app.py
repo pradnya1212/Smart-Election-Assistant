@@ -141,6 +141,27 @@ def categories():
     conn.close()
     return render_template("categories.html", data=data)
 
+@app.route("/api/categories", methods=["POST"])
+def add_category():
+    name = request.json.get("name")
+    if not name: return jsonify({"success": False})
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO categories (name) VALUES (?)", (name,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
+@app.route("/api/categories/<int:id>", methods=["DELETE"])
+def delete_category(id):
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("DELETE FROM categories WHERE id=?", (id,))
+    c.execute("DELETE FROM candidates WHERE category_id=?", (id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
 @app.route("/voting-list")
 def voting_list():
     conn = sqlite3.connect("database.db")
