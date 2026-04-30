@@ -2,27 +2,27 @@
 {% block content %}
 <div class="stats-grid">
     <div class="stat-card teal">
-        <h3>Voters</h3>
+        <h3 data-i18n="voters">Voters</h3>
         <div class="val" id="statVoters">250</div>
     </div>
     <div class="stat-card blue">
-        <h3>Voted</h3>
+        <h3 data-i18n="voted">Votes Cast</h3>
         <div class="val" id="statVoted">0</div>
     </div>
 </div>
 
-<h1 style="margin-bottom: 1.5rem; color: #334155;">Welcome, <span id="uiName">User</span> 👋</h1>
+<h1 style="margin-bottom: 1.5rem; color: #334155;"><span data-i18n="welcome">Welcome</span>, <span id="uiName">User</span> 👋</h1>
 
 <div class="section-card">
     <div class="section-title">
-        <h2>Dashboard Summary</h2>
+        <h2 data-i18n="home">Dashboard Summary</h2>
         <p style="color: #666; font-size: 0.85rem;">Live election overview</p>
     </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
         <div>
-            <h4 style="margin-bottom: 1rem; color: #334155;">Status Check</h4>
+            <h4 style="margin-bottom: 1rem; color: #334155;" data-i18n="status">Status Check</h4>
             <p id="uiEligibility" style="font-weight: 700; font-size: 1.2rem;"></p>
-            <p style="color: #666; margin-top: 0.5rem;">Location: <span id="uiLocation"></span></p>
+            <p style="color: #666; margin-top: 0.5rem;"><span data-i18n="location">Location</span>: <span id="uiLocation"></span></p>
         </div>
         <div>
             <h4 style="margin-bottom: 1rem; color: #334155;">Voter Checklist</h4>
@@ -38,19 +38,28 @@
 <script>
     window.addEventListener('load', () => {
         if(user) {
-            document.getElementById('uiName').innerText = user.name;
-            document.getElementById('uiLocation').innerText = user.state;
-            const elig = document.getElementById('uiEligibility');
-            if(user.age >= 18) {
-                elig.innerText = "✅ Eligible to Vote";
-                elig.style.color = "#28a745";
-            } else {
-                elig.innerText = "❌ Not Eligible";
-                elig.style.color = "#dc3545";
-            }
+            renderLocal();
             fetchStats();
         }
     });
+
+    window.addEventListener('languageChanged', renderLocal);
+
+    function renderLocal() {
+        const lang = localStorage.getItem('lang') || 'English';
+        const dict = translations[lang] || translations["English"];
+        
+        document.getElementById('uiName').innerText = user.name;
+        document.getElementById('uiLocation').innerText = user.state;
+        const elig = document.getElementById('uiEligibility');
+        if(user.age >= 18) {
+            elig.innerText = dict["eligible"] || "Eligible to Vote";
+            elig.style.color = "#28a745";
+        } else {
+            elig.innerText = dict["not_eligible"] || "Not Eligible";
+            elig.style.color = "#dc3545";
+        }
+    }
     async function fetchStats() {
         const res = await fetch('/api/stats');
         const data = await res.json();

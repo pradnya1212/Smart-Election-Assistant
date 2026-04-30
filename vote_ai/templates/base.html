@@ -47,16 +47,16 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">🗳️ CIVICMATE</div>
-        <a href="/dashboard" class="nav-link {% if request.path == '/dashboard' %}active{% endif %}">🏠 Home</a>
-        <a href="/categories" class="nav-link {% if request.path == '/categories' %}active{% endif %}">📂 Category List</a>
-        <a href="/voting-list" class="nav-link {% if request.path == '/voting-list' %}active{% endif %}">🗳 Voting List</a>
-        <a href="/ai-assistant" class="nav-link {% if request.path == '/ai-assistant' %}active{% endif %}">🤖 AI Assistant</a>
-        <a href="/education" class="nav-link {% if request.path == '/education' %}active{% endif %}">📚 Education Center</a>
-        <a href="/admin" class="nav-link">📊 Admin Results</a>
+        <a href="/dashboard" class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" data-i18n="home">🏠 Home</a>
+        <a href="/categories" class="nav-link {% if request.path == '/categories' %}active{% endif %}" data-i18n="cat_list">📂 Category List</a>
+        <a href="/voting-list" class="nav-link {% if request.path == '/voting-list' %}active{% endif %}" data-i18n="vote_list">🗳 Voting List</a>
+        <a href="/ai-assistant" class="nav-link {% if request.path == '/ai-assistant' %}active{% endif %}" data-i18n="ai_assistant">🤖 AI Assistant</a>
+        <a href="/education" class="nav-link {% if request.path == '/education' %}active{% endif %}" data-i18n="edu_center">📚 Education Center</a>
+        <a href="/admin" class="nav-link" data-i18n="admin_results">📊 Admin Results</a>
         
         <div style="margin-top: auto; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
-            <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.5rem;">LANGUAGE</div>
-            <select id="appLang" style="width: 100%; padding: 0.5rem; border-radius: 4px; background: #444; color: white; border: none;" onchange="localStorage.setItem('lang', this.value)">
+            <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.5rem;" data-i18n="language">LANGUAGE</div>
+            <select id="appLang" style="width: 100%; padding: 0.5rem; border-radius: 4px; background: #444; color: white; border: none;" onchange="updateLanguage(this.value)">
                 <option value="English">English</option>
                 <option value="Hindi">Hindi</option>
                 <option value="Marathi">Marathi</option>
@@ -68,10 +68,10 @@
     <!-- Main -->
     <main class="main">
         <header class="header">
-            <div style="font-size: 0.9rem; font-weight: 600;">Election Portal v3.0</div>
+            <div style="font-size: 0.9rem; font-weight: 600;" data-i18n="portal_title">Election Portal v3.0</div>
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <span id="userNameDisplay" style="font-size: 0.85rem;">User</span>
-                <button class="btn-logout" onclick="logout()">Logout</button>
+                <button class="btn-logout" onclick="logout()" data-i18n="logout">Logout</button>
             </div>
         </header>
 
@@ -81,13 +81,44 @@
     </main>
 
     <script>
+        const translations = {
+            "English": {
+                "home": "🏠 Home", "cat_list": "📂 Category List", "vote_list": "🗳 Voting List", "ai_assistant": "🤖 AI Assistant", "edu_center": "📚 Education Center", "admin_results": "📊 Admin Results", "language": "LANGUAGE", "logout": "Logout", "portal_title": "Election Portal v3.0",
+                "voters": "Voters", "voted": "Votes Cast", "welcome": "Welcome", "status": "Status Check", "eligible": "Eligible to Vote", "not_eligible": "Not Eligible", "location": "Location"
+            },
+            "Marathi": {
+                "home": "🏠 मुख्यपृष्ठ", "cat_list": "📂 श्रेणी यादी", "vote_list": "🗳 मतदानाची यादी", "ai_assistant": "🤖 एआय सहाय्यक", "edu_center": "📚 शिक्षण केंद्र", "admin_results": "📊 प्रशासन निकाल", "language": "भाषा", "logout": "बाहेर पडा", "portal_title": "निवडणूक पोर्टल v3.0",
+                "voters": "मतदार", "voted": "मतदान झाले", "welcome": "स्वागत आहे", "status": "पात्रता तपासा", "eligible": "मतदानासाठी पात्र", "not_eligible": "पात्र नाही", "location": "स्थान"
+            },
+            "Hindi": {
+                "home": "🏠 मुख्यपृष्ठ", "cat_list": "📂 श्रेणी सूची", "vote_list": "🗳 मतदान सूची", "ai_assistant": "🤖 एआई सहायक", "edu_center": "📚 शिक्षा केंद्र", "admin_results": "📊 एडमिन परिणाम", "language": "भाषा", "logout": "लॉग आउट", "portal_title": "चुनाव पोर्टल v3.0",
+                "voters": "मतदाता", "voted": "मतदान हुआ", "welcome": "स्वागत है", "status": "पात्रता जांच", "eligible": "मतदान के पात्र", "not_eligible": "पात्र नहीं", "location": "स्थान"
+            },
+            "Bengali": {
+                "home": "🏠 হোম", "cat_list": "📂 বিভাগ তালিকা", "vote_list": "🗳 ভোট তালিকা", "ai_assistant": "🤖 এআই সহকারী", "edu_center": "📚 শিক্ষা কেন্দ্র", "admin_results": "📊 অ্যাডমিন ফলাফল", "language": "ভাষা", "logout": "লগ আউট", "portal_title": "নির্বাচন পোর্টাল v3.0",
+                "voters": "ভোটার", "voted": "ভোট পড়েছে", "welcome": "স্বাগতম", "status": "যোগ্যতা পরীক্ষা", "eligible": "ভোটের যোগ্য", "not_eligible": "যোগ্য নয়", "location": "স্থান"
+            }
+        };
+
+        function updateLanguage(lang) {
+            localStorage.setItem('lang', lang);
+            const dict = translations[lang] || translations["English"];
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                if (dict[key]) el.innerText = dict[key];
+            });
+            // Also notify pages to re-render local content
+            window.dispatchEvent(new Event('languageChanged'));
+        }
+
         let user = JSON.parse(localStorage.getItem("user"));
         window.addEventListener('load', () => {
             if(!user && window.location.pathname !== '/') { window.location.href = "/"; return; }
             if(user) {
                 document.getElementById('userNameDisplay').innerText = user.name;
-                const savedLang = localStorage.getItem('lang');
-                if(savedLang) document.getElementById('appLang').value = savedLang;
+                const savedLang = localStorage.getItem('lang') || 'English';
+                document.getElementById('appLang').value = savedLang;
+                updateLanguage(savedLang);
             }
         });
         function logout() { localStorage.removeItem("user"); window.location.href = "/"; }
