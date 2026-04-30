@@ -413,9 +413,9 @@
 <body>
 
     <!-- Modal -->
-    <div class="modal-overlay" id="registerModal">
+    <div class="modal-overlay" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal">
-            <h2>🆔 Simulator: Generate Voter ID</h2>
+            <h2 id="modalTitle">🆔 Simulator: Generate Voter ID</h2>
             <div class="form-group">
                 <label>Full Name</label>
                 <input type="text" id="regName" placeholder="e.g. Akash Wani">
@@ -441,7 +441,7 @@
 
     <div class="container">
         <!-- Sidebar Navigation -->
-        <div class="sidebar">
+        <nav class="sidebar" aria-label="Quick Actions">
             <div class="sidebar-title">Quick Actions</div>
             <button class="action-btn" onclick="quickAsk('How to vote in the upcoming election?')">
                 <i>🎯</i> How to Vote
@@ -455,11 +455,11 @@
             <button class="action-btn" style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.2);" onclick="openModal()">
                 <i>🆔</i> Generate Voter ID
             </button>
-        </div>
+        </nav>
 
         <!-- Main Chat Area -->
-        <div class="main">
-            <div class="chat-container" id="chat">
+        <main class="main">
+            <div class="chat-container" id="chat" role="log" aria-live="polite">
                 <!-- Welcome Message -->
                 <div class="msg-wrapper bot">
                     <div class="msg bot">
@@ -479,15 +479,15 @@
             <!-- Input Box -->
             <div class="input-area">
                 <div class="input-box">
-                    <input type="text" id="userInput" placeholder="Ask a question about voting..." onkeypress="handleKeyPress(event)">
-                    <button class="send-btn" onclick="sendMessage()">
+                    <input type="text" id="userInput" placeholder="Ask a question about voting..." aria-label="Ask a question about voting" onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()" aria-label="Send Message">
                         <svg viewBox="0 0 24 24">
                             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
                         </svg>
                     </button>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <script>
