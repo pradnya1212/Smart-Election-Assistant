@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="section-card">
+    <div class="section-title">
+        <h2 data-i18n="users_title">Registered Voters</h2>
+        <p style="color: #666; font-size: 0.85rem;">Manage and view the official electoral roll</p>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+        <thead>
+            <tr style="background: #f8f9fa; border-bottom: 2px solid var(--border);">
+                <th style="padding: 1rem; text-align: left;">#</th>
+                <th style="padding: 1rem; text-align: left;" data-i18n="name">Name</th>
+                <th style="padding: 1rem; text-align: left;" data-i18n="age">Age</th>
+                <th style="padding: 1rem; text-align: left;" data-i18n="location">Location</th>
+                <th style="padding: 1rem; text-align: right;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in voters %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 1rem;">{{ loop.index }}</td>
+                <td style="padding: 1rem; font-weight: 600;">{{ v[1] }}</td>
+                <td style="padding: 1rem;">{{ v[2] }}</td>
+                <td style="padding: 1rem;">{{ v[3] }}</td>
+                <td style="padding: 1rem; text-align: right;">
+                    <span style="background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">Verified</span>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="padding: 3rem; text-align: center; color: #999;">No voters registered yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

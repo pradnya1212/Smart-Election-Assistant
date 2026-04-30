@@ -57,13 +57,25 @@
     </div>
 
     <script>
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
             const user = {
                 name: document.getElementById('name').value,
                 age: document.getElementById('age').value,
                 state: document.getElementById('state').value
             };
+            
+            // Register in real DB
+            await fetch('/api/register_voter', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    name: user.name,
+                    age: user.age,
+                    location: user.state
+                })
+            });
+
             localStorage.setItem("user", JSON.stringify(user));
             window.location.href = "/dashboard";
         }

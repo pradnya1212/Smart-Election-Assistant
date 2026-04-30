@@ -19,10 +19,11 @@ except Exception as e:
 def init_db():
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS candidates (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category_id INTEGER, votes INTEGER DEFAULT 0)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS candidates (id INTEGER PRIMARY KEY, name TEXT, category_id INTEGER, votes INTEGER DEFAULT 0)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS voters (id INTEGER PRIMARY KEY, name TEXT, age INTEGER, location TEXT)''')
     
-    # Seed data if empty
+    # Seed data only if empty
     c.execute("SELECT COUNT(*) FROM categories")
     if c.fetchone()[0] == 0:
         c.execute("INSERT INTO categories (name) VALUES ('Student Chairman')")
@@ -183,6 +184,26 @@ def ai_assistant():
 @app.route("/education")
 def education():
     return render_template("education.html")
+
+@app.route("/users")
+def users():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM voters")
+    voters = c.fetchall()
+    conn.close()
+    return render_template("users.html", voters=voters)
+
+@app.route("/api/register_voter", methods=["POST"])
+def register_voter():
+    data = request.json
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO voters (name, age, location) VALUES (?, ?, ?)", 
+              (data.get("name"), data.get("age"), data.get("location")))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
 
 @app.route("/ask")
 def ask():
