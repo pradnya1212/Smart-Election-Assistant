@@ -64,6 +64,7 @@
         const res = await fetch('/api/stats');
         const data = await res.json();
         document.getElementById('statVoted').innerText = data.total_votes;
+        document.getElementById('statVoters').innerText = data.total_voters;
     }
 </script>
 {% endblock %}
