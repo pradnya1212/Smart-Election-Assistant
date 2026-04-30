@@ -13,8 +13,8 @@
 {% block content %}
 <div class="section-card">
     <div class="section-title">
-        <h2>Student Election</h2>
-        <p style="color: #666; font-size: 0.8rem;">Official Polling List</p>
+        <h2 data-i18n="vote_title">Student Election</h2>
+        <p style="color: #666; font-size: 0.8rem;" data-i18n="vote_sub">Official Polling List</p>
     </div>
     
     {% for cat, candidates in data %}
@@ -26,7 +26,7 @@
                 <div class="avatar">👤</div>
                 <span class="candidate-name">{{ c[1] }}</span>
             </div>
-            <button class="vote-badge" id="btn-{{ c[0] }}" onclick="castVote({{ c[0] }})">Vote</button>
+            <button class="vote-badge" id="btn-{{ c[0] }}" onclick="castVote({{ c[0] }})" data-i18n="vote_btn">Vote</button>
         </div>
         {% endfor %}
     </div>

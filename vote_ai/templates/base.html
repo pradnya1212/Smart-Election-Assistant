@@ -81,29 +81,58 @@
     </main>
 
     <script>
-        const translations = {
-            "English": {
+                    "English": {
                 "home": "🏠 Home", "cat_list": "📂 Category List", "vote_list": "🗳 Voting List", "ai_assistant": "🤖 AI Assistant", "edu_center": "📚 Education Center", "admin_results": "📊 Admin Results", "language": "LANGUAGE", "logout": "Logout", "portal_title": "Election Portal v3.0",
                 "voters": "Voters", "voted": "Votes Cast", "welcome": "Welcome", "status": "Status Check", "eligible": "Eligible to Vote", "not_eligible": "Not Eligible", "location": "Location",
                 "cat_form": "Category Form", "cat_name": "Category Name", "save": "Save", "cancel": "Cancel", "action": "Action",
                 "edu_title": "Election Process Education 📚", "resources": "Quick Resources",
-                "users_title": "Registered Voters", "name": "Name", "age": "Age", "verified": "Verified",
-                "ai_title": "🤖 AI Election Assistant", "ai_sub": "Ask anything about the voting process", "send": "Send", "bot_hello": "Hello! I am your AI assistant. How can I help you today?"
+                "users_title": "Registered Voters", "users_sub": "Manage and view the official electoral roll", "name": "Name", "age": "Age", "verified": "Verified",
+                "ai_title": "🤖 AI Election Assistant", "ai_sub": "Ask anything about the voting process", "send": "Send", "bot_hello": "Hello! I am your AI assistant. How can I help you today?",
+                "vote_title": "Student Election", "vote_sub": "Official Polling List", "vote_btn": "Vote",
+                "step1_t": "Voter Registration", "step1_d": "Ensure your name is in the electoral roll.",
+                "step2_t": "Candidate Nomination", "step2_d": "Candidates file their nomination papers.",
+                "step3_t": "Campaigning Phase", "step3_d": "Candidates share their vision with voters.",
+                "step4_t": "The Polling Day", "step4_d": "Voters cast ballots using EVM machines."
             },
             "Marathi": {
                 "home": "🏠 मुख्यपृष्ठ", "cat_list": "📂 श्रेणी यादी", "vote_list": "🗳 मतदानाची यादी", "ai_assistant": "🤖 एआय सहाय्यक", "edu_center": "📚 शिक्षण केंद्र", "admin_results": "📊 प्रशासन निकाल", "language": "भाषा", "logout": "बाहेर पडा", "portal_title": "निवडणूक पोर्टल v3.0",
                 "voters": "मतदार", "voted": "मतदान झाले", "welcome": "स्वागत आहे", "status": "पात्रता तपासा", "eligible": "मतदानासाठी पात्र", "not_eligible": "पात्र नाही", "location": "स्थान",
                 "cat_form": "श्रेणी फॉर्म", "cat_name": "श्रेणीचे नाव", "save": "जतन करा", "cancel": "रद्द करा", "action": "कृती",
                 "edu_title": "निवडणूक प्रक्रिया शिक्षण 📚", "resources": "त्वरीत संसाधने",
-                "users_title": "नोंदणीकृत मतदार", "name": "नाव", "age": "वय", "verified": "सत्यापित",
-                "ai_title": "🤖 एआय निवडणूक सहाय्यक", "ai_sub": "मतदान प्रक्रियेबद्दल काहीही विचारा", "send": "पाठवा", "bot_hello": "नमस्कार! मी तुमचा एआय सहाय्यक आहे. मी तुम्हाला कशी मदत करू शकतो?"
+                "users_title": "नोंदणीकृत मतदार", "users_sub": "अधिकृत मतदार यादी पहा आणि व्यवस्थापित करा", "name": "नाव", "age": "वय", "verified": "सत्यापित",
+                "ai_title": "🤖 एआय निवडणूक सहाय्यक", "ai_sub": "मतदान प्रक्रियेबद्दल काहीही विचारा", "send": "पाठवा", "bot_hello": "नमस्कार! मी तुमचा एआय सहाय्यक आहे. मी तुम्हाला कशी मदत करू शकतो?",
+                "vote_title": "विद्यार्थी निवडणूक", "vote_sub": "अधिकृत मतदानाची यादी", "vote_btn": "मतदान करा",
+                "step1_t": "मतदार नोंदणी", "step1_d": "मतदार यादीत तुमचे नाव असल्याची खात्री करा.",
+                "step2_t": "उमेदवारी अर्ज", "step2_d": "उमेदवार त्यांचे उमेदवारी अर्ज दाखल करतात.",
+                "step3_t": "प्रचार टप्पा", "step3_d": "उमेदवार मतदारांशी त्यांचे व्हिजन शेअर करतात.",
+                "step4_t": "मतदानाचा दिवस", "step4_d": "मतदार ईव्हीएम मशिन वापरून मतदान करतात."
             },
             "Hindi": {
                 "home": "🏠 मुख्यपृष्ठ", "cat_list": "📂 श्रेणी सूची", "vote_list": "🗳 मतदान सूची", "ai_assistant": "🤖 एआई सहायक", "edu_center": "📚 शिक्षा केंद्र", "admin_results": "📊 एडमिन परिणाम", "language": "भाषा", "logout": "लॉग आउट", "portal_title": "चुनाव पोर्टल v3.0",
                 "voters": "मतदाता", "voted": "मतदान हुआ", "welcome": "स्वागत है", "status": "पात्रता जांच", "eligible": "मतदान के पात्र", "not_eligible": "पात्र नहीं", "location": "स्थान",
                 "cat_form": "श्रेणी फॉर्म", "cat_name": "श्रेणी का नाम", "save": "सहेजें", "cancel": "रद्द करें", "action": "कार्य",
                 "edu_title": "चुनाव प्रक्रिया शिक्षा 📚", "resources": "त्वरित संसाधन",
-                "users_title": "पंजीकृत मतदाता", "name": "नाम", "age": "आयु", "verified": "सत्यापित",
+                "users_title": "पंजीकृत मतदाता", "users_sub": "आधिकारिक मतदाता सूची प्रबंधित करें और देखें", "name": "नाम", "age": "आयु", "verified": "सत्यापित",
+                "ai_title": "🤖 एआई चुनाव सहायक", "ai_sub": "मतदान प्रक्रिया के बारे में कुछ भी पूछें", "send": "भेजें", "bot_hello": "नमस्ते! मैं आपका एआई सहायक हूं। मैं आज आपकी क्या मदद कर सकता हूँ?",
+                "vote_title": "छात्र चुनाव", "vote_sub": "आधिकारिक मतदान सूची", "vote_btn": "वोट दें",
+                "step1_t": "मतदाता पंजीकरण", "step1_d": "सुनिश्चित करें कि आपका नाम मतदाता सूची में है।",
+                "step2_t": "उम्मीदवार नामांकन", "step2_d": "उम्मीदवार अपने नामांकन पत्र दाखिल करते हैं।",
+                "step3_t": "प्रचार चरण", "step3_d": "उम्मीदवार मतदाताओं के साथ अपना दृष्टिकोण साझा करते हैं।",
+                "step4_t": "मतदान का दिन", "step4_d": "मतदाता ईवीएम मशीन का उपयोग करके वोट डालते हैं।"
+            },
+            "Bengali": {
+                "home": "🏠 হোম", "cat_list": "📂 বিভাগ তালিকা", "vote_list": "🗳 ভোট তালিকা", "ai_assistant": "🤖 এআই সহকারী", "edu_center": "📚 শিক্ষা কেন্দ্র", "admin_results": "📊 অ্যাডমিন ফলাফল", "language": "ভাষা", "logout": "লগ আউট", "portal_title": "নির্বাচন পোর্টাল v3.0",
+                "voters": "ভোটার", "voted": "ভোট পড়েছে", "welcome": "স্বাগতম", "status": "যোগ্যতা পরীক্ষা", "eligible": "ভোটের যোগ্য", "not_eligible": "যোগ্য নয়", "location": "স্থান",
+                "cat_form": "বিভাগ ফর্ম", "cat_name": "বিভাগের নাম", "save": "সংরক্ষণ করুন", "cancel": "বাতিল করুন", "action": "অ্যাকশন",
+                "edu_title": "নির্বাচন প্রক্রিয়া শিক্ষা 📚", "resources": "দ্রুত সম্পদ",
+                "users_title": "নিবন্ধিত ভোটার", "users_sub": "অফিসিয়াল ভোটার তালিকা পরিচালনা এবং দেখুন", "name": "নাম", "age": "বয়স", "verified": "যাচাইকৃত",
+                "ai_title": "🤖 এআই নির্বাচন সহকারী", "ai_sub": "ভোট প্রক্রিয়া সম্পর্কে কিছু জিজ্ঞাসা করুন", "send": "পাঠান", "bot_hello": "হ্যালো! আমি আপনার এআই সহকারী। আমি আজ আপনাকে কীভাবে সাহায্য করতে পারি?",
+                "vote_title": "ছাত্র নির্বাচন", "vote_sub": "অফিসিয়াল ভোট তালিকা", "vote_btn": "ভোট দিন",
+                "step1_t": "ভোটার নিবন্ধন", "step1_d": "ভোটার তালিকায় আপনার নাম আছে কিনা নিশ্চিত করুন।",
+                "step2_t": "প্রার্থী মনোনয়ন", "step2_d": "প্রার্থীরা তাদের মনোনয়নপত্র জমা দেন।",
+                "step3_t": "প্রচার পর্ব", "step3_d": "প্রার্থীরা ভোটারদের সাথে তাদের দৃষ্টিভঙ্গি ভাগ করে নেন।",
+                "step4_t": "ভোটের দিন", "step4_d": "ভোটাররা ইভিএম মেশিন ব্যবহার করে ভোট দেন।"
+            }ied": "सत्यापित",
                 "ai_title": "🤖 एआई चुनाव सहायक", "ai_sub": "मतदान प्रक्रिया के बारे में कुछ भी पूछें", "send": "भेजें", "bot_hello": "नमस्ते! मैं आपका एआई सहायक हूं। मैं आज आपकी क्या मदद कर सकता हूँ?"
             },
             "Bengali": {
