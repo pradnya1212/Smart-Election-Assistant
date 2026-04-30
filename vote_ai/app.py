@@ -34,7 +34,7 @@ def ai_response(query):
 
     try:
         res = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-1.5-flash",
             contents=prompt
         )
         return res.text if res.text else "Sorry, I couldn't generate a response."

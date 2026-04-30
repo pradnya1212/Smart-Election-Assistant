@@ -3,506 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoteGuide AI</title>
-    <!-- Modern Fonts -->
+    <title>VoteAssist Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --bg-panel: #1e293b;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --accent: #22c55e;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
             --text-main: #f8fafc;
-            --text-muted: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --danger: #ef4444;
             --border: #334155;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #020617 100%);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        header {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-        }
-
-        header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Sidebar */
+        /* --- Layout --- */
         .sidebar {
-            width: 280px;
-            background: var(--bg-panel);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            border-right: 1px solid var(--border);
-            transition: transform 0.3s ease;
+            width: 320px; background-color: var(--bg-card);
+            border-right: 1px solid var(--border); padding: 2rem;
+            display: flex; flex-direction: column; gap: 2rem;
         }
+        .main { flex: 1; display: flex; flex-direction: column; height: 100vh; }
 
-        .sidebar-title {
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+        /* --- Profile & Tasks --- */
+        .profile-card {
+            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 1.5rem; border-radius: 12px;
         }
-
-        .action-btn {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--text-main);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 0.875rem 1rem;
-            border-radius: 0.75rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.2s ease;
-            text-align: left;
+        .task-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+        .task-item {
+            display: flex; align-items: center; gap: 0.75rem; padding: 1rem;
+            background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid var(--border);
+            transition: 0.2s;
         }
+        .task-item.completed { border-color: var(--success); background: rgba(34, 197, 94, 0.05); }
+        .task-item.failed { border-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
 
-        .action-btn:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        /* --- Buttons & Inputs --- */
+        .btn {
+            background: var(--accent); color: white; border: none;
+            padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;
+            font-weight: 500; transition: 0.2s; width: 100%;
         }
-
-        .action-btn i {
-            font-size: 1.2rem;
+        .btn:hover { background: var(--accent-hover); }
+        .input-field {
+            width: 100%; padding: 0.75rem 1rem; background: var(--bg-main);
+            border: 1px solid var(--border); color: white; border-radius: 8px;
+            margin-bottom: 1rem; outline: none;
         }
+        .input-field:focus { border-color: var(--accent); }
 
-        /* Main Chat Area */
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: transparent;
-            position: relative;
-        }
-
+        /* --- Chat UI --- */
         .chat-container {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            scroll-behavior: smooth;
+            flex: 1; padding: 2rem; overflow-y: auto; display: flex;
+            flex-direction: column; gap: 1.5rem; scroll-behavior: smooth;
         }
+        .chat-container::before { content: ""; flex: 1 1 auto; }
+        .msg-wrapper { display: flex; width: 100%; flex-shrink: 0; }
+        .msg-wrapper.user { justify-content: flex-end; }
+        .msg { max-width: 80%; padding: 1rem 1.25rem; border-radius: 12px; line-height: 1.5; }
+        .msg.bot { background: var(--bg-card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+        .msg.user { background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .input-area { padding: 1.5rem 2rem; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; gap: 1rem; }
 
-        /* This pushes all messages to the bottom, removing the massive blank space */
-        .chat-container::before {
-            content: "";
-            flex: 1 1 auto;
-        }
-
-        .chat-container::-webkit-scrollbar {
-            width: 6px;
-        }
-        .chat-container::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        .msg-wrapper {
-            display: flex;
-            width: 100%;
-            animation: fadeIn 0.4s ease-out forwards;
-            opacity: 0;
-            transform: translateY(10px);
-            flex-shrink: 0;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .msg-wrapper.user {
-            justify-content: flex-end;
-        }
-
-        .msg {
-            max-width: 75%;
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
-            font-size: 1rem;
-            line-height: 1.5;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .msg.user {
-            background: linear-gradient(135deg, var(--primary), #4f46e5);
-            border-bottom-right-radius: 0.25rem;
-            color: white;
-        }
-
-        .msg.bot {
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-bottom-left-radius: 0.25rem;
-            color: var(--text-main);
-        }
-
-        .msg.bot ul {
-            padding-left: 1.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .msg.bot li {
-            margin-bottom: 0.25rem;
-        }
-
-        /* Input Area */
-        .input-area {
-            padding: 1.5rem 2rem;
-            background: linear-gradient(to top, var(--bg-dark) 50%, transparent);
-        }
-
-        .input-box {
-            display: flex;
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 0.5rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            transition: border-color 0.3s ease;
-        }
-
-        .input-box:focus-within {
-            border-color: var(--primary);
-        }
-
-        input[type="text"] {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 0.75rem 1rem;
-            color: var(--text-main);
-            font-size: 1rem;
-            font-family: inherit;
-            outline: none;
-        }
-
-        input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .send-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .send-btn:hover {
-            background: var(--primary-hover);
-            transform: scale(1.05);
-        }
-
-        .send-btn:active {
-            transform: scale(0.95);
-        }
-
-        .send-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-
-        /* Loading Indicator */
-        .typing-indicator {
-            display: none;
-            padding: 1rem 1.25rem;
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            border-bottom-left-radius: 0.25rem;
-            width: fit-content;
-            gap: 5px;
-        }
-
-        .typing-indicator.active {
-            display: flex;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: var(--text-muted);
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-
-        /* Modal Styles */
+        /* --- Modals --- */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
         }
-
         .modal {
-            background: var(--bg-panel);
-            padding: 2rem;
-            border-radius: 1.5rem;
-            width: 90%;
-            max-width: 400px;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            animation: modalPop 0.3s ease-out;
+            background: var(--bg-card); padding: 2.5rem; border-radius: 16px;
+            width: 90%; max-width: 400px; border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-
-        @keyframes modalPop {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.25rem;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        .form-group input {
-            width: 100%;
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            color: var(--text-main);
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .btn-cancel {
-            flex: 1;
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            padding: 0.75rem;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-generate {
-            flex: 1;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-generate:hover {
-            background: var(--primary-hover);
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .container { flex-direction: column; }
-            .sidebar { 
-                width: 100%; 
-                padding: 1rem; 
-                flex-direction: row; 
-                overflow-x: auto; 
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            .sidebar-title { display: none; }
-            .action-btn { flex-shrink: 0; white-space: nowrap; }
-            .chat-container { padding: 1rem; }
-            .input-area { padding: 1rem; }
-            .msg { max-width: 90%; }
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-
-    <!-- Modal -->
-    <div class="modal-overlay" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <!-- Onboarding Modal -->
+    <div id="onboardingModal" class="modal-overlay">
         <div class="modal">
-            <h2 id="modalTitle">🆔 Simulator: Generate Voter ID</h2>
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="regName" placeholder="e.g. Akash Wani">
-            </div>
-            <div class="form-group">
-                <label>Age</label>
-                <input type="number" id="regAge" placeholder="e.g. 21">
-            </div>
-            <div class="form-group">
-                <label>Address</label>
-                <input type="text" id="regAddress" placeholder="e.g. Kolhapur">
-            </div>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn-generate" onclick="submitRegistration()">Generate ID</button>
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">🚀 Welcome to VoteAssist Pro</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; text-align: center; font-size: 0.9rem;">
+                Your personalized election companion.
+            </p>
+            <input type="text" id="obName" class="input-field" placeholder="Full Name">
+            <input type="number" id="obAge" class="input-field" placeholder="Age">
+            <input type="text" id="obState" class="input-field" placeholder="State (e.g. Maharashtra)">
+            <input type="text" id="obDistrict" class="input-field" placeholder="District (e.g. Mumbai)">
+            <button class="btn" onclick="saveUser()">Start Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Simulator Modal -->
+    <div id="simModal" class="modal-overlay hidden">
+        <div class="modal">
+            <h2 style="margin-bottom: 1.5rem;">🆔 Register Voter ID</h2>
+            <input type="text" id="simAddress" class="input-field" placeholder="Full Residential Address">
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn" style="background: transparent; border: 1px solid var(--border);" onclick="closeSim()">Cancel</button>
+                <button class="btn" onclick="submitSim()">Submit</button>
             </div>
         </div>
     </div>
 
-    <header>
-        <h1>🗳️ VoteGuide AI</h1>
-    </header>
+    <!-- LEFT SIDEBAR -->
+    <nav class="sidebar" aria-label="Dashboard">
+        <h2 style="font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 0.5rem;">
+            🗳️ VoteAssist <span style="color: var(--accent);">Pro</span>
+        </h2>
+        <div class="profile-card" id="profileCard">
+            <h3 style="margin-bottom: 0.5rem;">Hello <span id="uiName"></span> 👋</h3>
+            <p id="uiEligibility" style="font-weight: 600; margin-bottom: 0.5rem;"></p>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">📍 <span id="uiDistrict"></span>, <span id="uiState"></span></p>
+        </div>
+        <div>
+            <h4 style="color: var(--text-muted); margin-bottom: 1rem; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">📋 Your Task Tracker</h4>
+            <ul class="task-list" id="taskList">
+                <li class="task-item" id="task1"><span>⏳</span> Check Eligibility</li>
+                <li class="task-item" id="task2"><span>⏳</span> Register Voter ID</li>
+                <li class="task-item" id="task3"><span>⏳</span> Find Booth Location</li>
+                <li class="task-item" id="task4"><span>⏳</span> Cast Vote</li>
+            </ul>
+        </div>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.75rem;">
+            <button class="btn" onclick="openSim()">Register Voter ID</button>
+            <button class="btn" style="background: transparent; border: 1px solid var(--border);" onclick="quickAsk('Find my polling booth')">Find Booth</button>
+            <button class="btn" style="background: transparent; color: var(--danger);" onclick="resetProfile()">Reset Profile</button>
+        </div>
+    </nav>
 
-    <div class="container">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar" aria-label="Quick Actions">
-            <div class="sidebar-title">Quick Actions</div>
-            <button class="action-btn" onclick="quickAsk('How to vote in the upcoming election?')">
-                <i>🎯</i> How to Vote
-            </button>
-            <button class="action-btn" onclick="quickAsk('Can you explain the election process?')">
-                <i>🏛️</i> Election Process
-            </button>
-            <button class="action-btn" onclick="getGuide()">
-                <i>📋</i> Step Guide
-            </button>
-            <button class="action-btn" style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.2);" onclick="openModal()">
-                <i>🆔</i> Generate Voter ID
-            </button>
-        </nav>
-
-        <!-- Main Chat Area -->
-        <main class="main">
-            <div class="chat-container" id="chat" role="log" aria-live="polite">
-                <!-- Welcome Message -->
-                <div class="msg-wrapper bot">
-                    <div class="msg bot">
-                        👋 Hello! I am your <b>VoteGuide AI Assistant</b>.<br><br>
-                        I can help you understand the voting process, check your eligibility, and answer any election-related questions you have. How can I assist you today?
-                    </div>
-                </div>
-            </div>
-
-            <!-- Loading Indicator -->
-            <div class="chat-container" style="padding-top: 0; padding-bottom: 0;">
-                <div class="typing-indicator" id="typing">
-                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                </div>
-            </div>
-
-            <!-- Input Box -->
-            <div class="input-area">
-                <div class="input-box">
-                    <input type="text" id="userInput" placeholder="Ask a question about voting..." aria-label="Ask a question about voting" onkeypress="handleKeyPress(event)">
-                    <button class="send-btn" onclick="sendMessage()" aria-label="Send Message">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </main>
-    </div>
+    <!-- RIGHT MAIN CHAT -->
+    <main class="main">
+        <div class="chat-container" id="chat" role="log" aria-live="polite"></div>
+        <div class="input-area">
+            <input type="text" id="userInput" class="input-field" style="margin: 0;" placeholder="Ask anything..." aria-label="Ask a question" onkeypress="handleKeyPress(event)">
+            <button class="btn" style="width: auto;" onclick="sendMessage()">Send</button>
+        </div>
+    </main>
 
     <script>
-        const chatBox = document.getElementById("chat");
-        const inputField = document.getElementById("userInput");
-        const typingIndicator = document.getElementById("typing");
+        let user = null;
+        window.onload = () => {
+            const saved = localStorage.getItem("user");
+            if (saved) {
+                user = JSON.parse(saved);
+                document.getElementById('onboardingModal').classList.add('hidden');
+                updateDashboard();
+                appendMessage('bot', `Welcome back, ${user.name}! I am your personalized voting companion.`);
+            }
+        };
 
-        function scrollToBottom() {
-            chatBox.scrollTop = chatBox.scrollHeight;
+        function saveUser() {
+            const name = document.getElementById('obName').value;
+            const age = document.getElementById('obAge').value;
+            const state = document.getElementById('obState').value;
+            const district = document.getElementById('obDistrict').value;
+            if(!name || !age || !state || !district) return alert("Please fill all fields!");
+            user = { name, age: parseInt(age), state, district, registered: false };
+            localStorage.setItem("user", JSON.stringify(user));
+            document.getElementById('onboardingModal').classList.add('hidden');
+            updateDashboard();
+            appendMessage('bot', `Hello ${user.name}! 👋 I've set up your personalized dashboard for ${user.district}, ${user.state}. Let's get you ready for the elections!`);
+            checkEligibility();
+        }
+
+        function resetProfile() { localStorage.removeItem("user"); location.reload(); }
+
+        function updateDashboard() {
+            document.getElementById('uiName').innerText = user.name;
+            document.getElementById('uiDistrict').innerText = user.district;
+            document.getElementById('uiState').innerText = user.state;
+            
+            if(user.age >= 18) {
+                document.getElementById('uiEligibility').innerText = "✔ Eligible to Vote";
+                document.getElementById('uiEligibility').style.color = "var(--success)";
+                updateTask(1, 'completed', '✔', 'Eligibility Confirmed');
+            } else {
+                document.getElementById('uiEligibility').innerText = "❌ Not Eligible (Under 18)";
+                document.getElementById('uiEligibility').style.color = "var(--danger)";
+                updateTask(1, 'failed', '❌', 'Eligibility Failed (Under 18)');
+            }
+            if(user.registered) updateTask(2, 'completed', '✔', 'Voter ID Registered');
+        }
+
+        function updateTask(id, statusClass, icon, text) {
+            const el = document.getElementById('task' + id);
+            el.className = 'task-item ' + statusClass;
+            el.innerHTML = `<span>${icon}</span> ${text}`;
+        }
+
+        async function checkEligibility() {
+            appendMessage('user', `Check my eligibility for age ${user.age}`);
+            const res = await fetch(`/check?age=${user.age}`);
+            const data = await res.json();
+            appendMessage('bot', data.result);
+        }
+
+        function quickAsk(q) { document.getElementById('userInput').value = q; sendMessage(); }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const msg = input.value.trim();
+            if(!msg) return;
+            appendMessage('user', msg);
+            input.value = '';
+
+            // Interactive Task Overrides
+            if (msg.toLowerCase().includes("find") && msg.toLowerCase().includes("booth")) {
+                setTimeout(() => {
+                    appendMessage('bot', `📍 **Booth Search for ${user.district}:**\nBased on your profile, I am analyzing booths in ${user.district}, ${user.state}.\n\nCheck official locations here: [Electoral Search](https://electoralsearch.eci.gov.in/)`);
+                    updateTask(3, 'completed', '✔', 'Booth Location Found');
+                }, 800);
+                return;
+            }
+            if (msg.toLowerCase().includes("vote") && msg.toLowerCase().includes("cast")) {
+                setTimeout(() => {
+                    appendMessage('bot', `🎉 **Congratulations!**\nYou have completed the final step. Thank you for participating in democracy!`);
+                    updateTask(4, 'completed', '✔', 'Vote Casted Successfully');
+                }, 800);
+                return;
+            }
+
+            const typing = appendMessage('bot', 'Thinking...');
+            try {
+                const res = await fetch(`/ask?q=${encodeURIComponent(msg)}`);
+                const data = await res.json();
+                typing.innerHTML = formatMarkdown(data.message);
+            } catch {
+                typing.innerHTML = "⚠️ Offline mode active. Please check connection.";
+            }
         }
 
         function formatMarkdown(text) {
-            // Convert **text** to <b>text</b> to remove the raw markdown stars
             if (typeof text === 'string') {
-                return text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+                text = text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+                text = text.replace(/\n/g, "<br>");
+                return text;
             }
             return text;
         }
@@ -510,113 +252,40 @@
         function appendMessage(sender, text) {
             const wrapper = document.createElement("div");
             wrapper.className = `msg-wrapper ${sender}`;
-            
             const msgObj = document.createElement("div");
             msgObj.className = `msg ${sender}`;
             msgObj.innerHTML = formatMarkdown(text);
-
             wrapper.appendChild(msgObj);
-            chatBox.appendChild(wrapper);
-            scrollToBottom();
+            document.getElementById('chat').appendChild(wrapper);
+            document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+            return msgObj;
         }
 
-        function showTyping() {
-            typingIndicator.classList.add("active");
-            scrollToBottom();
+        function handleKeyPress(e) { if(e.key === 'Enter') sendMessage(); }
+
+        function openSim() {
+            if(user && user.age < 18) return alert("You are not eligible to register yet (under 18).");
+            document.getElementById('simModal').classList.remove('hidden');
         }
-
-        function hideTyping() {
-            typingIndicator.classList.remove("active");
-        }
-
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        function quickAsk(question) {
-            inputField.value = question;
-            sendMessage();
-        }
-
-        async function sendMessage() {
-            const query = inputField.value.trim();
-            if (!query) return;
-
-            inputField.value = "";
-            appendMessage("user", query);
-            showTyping();
-
-            try {
-                const response = await fetch(`/ask?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
-                hideTyping();
-                appendMessage("bot", data.message);
-            } catch (error) {
-                hideTyping();
-                appendMessage("bot", "⚠️ Network error. Please try again later.");
-            }
-        }
-
-        async function getGuide() {
-            appendMessage("user", "Show me the step-by-step voting guide.");
-            showTyping();
-            
-            try {
-                const response = await fetch("/guide");
-                const data = await response.json();
-                hideTyping();
-                
-                let html = "<b>📋 Step-by-Step Voting Guide:</b><ul>";
-                data.steps.forEach(step => {
-                    html += `<li>${step}</li>`;
-                });
-                html += "</ul>";
-                
-                appendMessage("bot", html);
-            } catch (error) {
-                hideTyping();
-                appendMessage("bot", "⚠️ Could not load the guide right now.");
-            }
-        }
-
-        function openModal() {
-            document.getElementById('registerModal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('registerModal').style.display = 'none';
-        }
-
-        async function submitRegistration() {
-            const name = document.getElementById('regName').value;
-            const age = document.getElementById('regAge').value;
-            const address = document.getElementById('regAddress').value;
-
-            closeModal();
-            appendMessage("user", `I want to generate a Voter ID for ${name || "myself"}.`);
-            showTyping();
-
-            try {
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, age, address })
-                });
-                const data = await response.json();
-                hideTyping();
-                
-                appendMessage("bot", data.message);
-                
-                if(data.success) {
-                    document.getElementById('regName').value = "";
-                    document.getElementById('regAge').value = "";
-                    document.getElementById('regAddress').value = "";
-                }
-            } catch (error) {
-                hideTyping();
-                appendMessage("bot", "⚠️ Error connecting to server.");
+        function closeSim() { document.getElementById('simModal').classList.add('hidden'); }
+        
+        async function submitSim() {
+            const addr = document.getElementById('simAddress').value;
+            if(!addr) return alert("Enter address!");
+            closeSim();
+            appendMessage('user', `Register me for Voter ID. Name: ${user.name}, Age: ${user.age}, Address: ${addr}`);
+            const typing = appendMessage('bot', 'Processing Registration...');
+            const res = await fetch('/generate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name: user.name, age: user.age, address: addr })
+            });
+            const data = await res.json();
+            typing.innerHTML = formatMarkdown(data.message);
+            if(data.success) {
+                user.registered = true;
+                localStorage.setItem("user", JSON.stringify(user));
+                updateDashboard();
             }
         }
     </script>
