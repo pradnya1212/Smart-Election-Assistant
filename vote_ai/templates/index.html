@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteGuide AI</title>
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-panel: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #22c55e;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #020617 100%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-panel);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border-right: 1px solid var(--border);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-title {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--text-main);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Main Chat Area */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: transparent;
+            position: relative;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        /* This pushes all messages to the bottom, removing the massive blank space */
+        .chat-container::before {
+            content: "";
+            flex: 1 1 auto;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .msg-wrapper {
+            display: flex;
+            width: 100%;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+            flex-shrink: 0;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-wrapper.user {
+            justify-content: flex-end;
+        }
+
+        .msg {
+            max-width: 75%;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .msg.user {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            border-bottom-right-radius: 0.25rem;
+            color: white;
+        }
+
+        .msg.bot {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 0.25rem;
+            color: var(--text-main);
+        }
+
+        .msg.bot ul {
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .msg.bot li {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(to top, var(--bg-dark) 50%, transparent);
+        }
+
+        .input-box {
+            display: flex;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s ease;
+        }
+
+        .input-box:focus-within {
+            border-color: var(--primary);
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .send-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Loading Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 1rem 1.25rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            border-bottom-left-radius: 0.25rem;
+            width: fit-content;
+            gap: 5px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: var(--bg-panel);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: modalPop 0.3s ease-out;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-generate {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-generate:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                padding: 1rem; 
+                flex-direction: row; 
+                overflow-x: auto; 
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .sidebar-title { display: none; }
+            .action-btn { flex-shrink: 0; white-space: nowrap; }
+            .chat-container { padding: 1rem; }
+            .input-area { padding: 1rem; }
+            .msg { max-width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal">
+            <h2>🆔 Simulator: Generate Voter ID</h2>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="regName" placeholder="e.g. Akash Wani">
+            </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" id="regAge" placeholder="e.g. 21">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" id="regAddress" placeholder="e.g. Kolhapur">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-generate" onclick="submitRegistration()">Generate ID</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <h1>🗳️ VoteGuide AI</h1>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-title">Quick Actions</div>
+            <button class="action-btn" onclick="quickAsk('How to vote in the upcoming election?')">
+                <i>🎯</i> How to Vote
+            </button>
+            <button class="action-btn" onclick="quickAsk('Can you explain the election process?')">
+                <i>🏛️</i> Election Process
+            </button>
+            <button class="action-btn" onclick="getGuide()">
+                <i>📋</i> Step Guide
+            </button>
+            <button class="action-btn" style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.2);" onclick="openModal()">
+                <i>🆔</i> Generate Voter ID
+            </button>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main">
+            <div class="chat-container" id="chat">
+                <!-- Welcome Message -->
+                <div class="msg-wrapper bot">
+                    <div class="msg bot">
+                        👋 Hello! I am your <b>VoteGuide AI Assistant</b>.<br><br>
+                        I can help you understand the voting process, check your eligibility, and answer any election-related questions you have. How can I assist you today?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="chat-container" style="padding-top: 0; padding-bottom: 0;">
+                <div class="typing-indicator" id="typing">
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                </div>
+            </div>
+
+            <!-- Input Box -->
+            <div class="input-area">
+                <div class="input-box">
+                    <input type="text" id="userInput" placeholder="Ask a question about voting..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById("chat");
+        const inputField = document.getElementById("userInput");
+        const typingIndicator = document.getElementById("typing");
+
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function formatMarkdown(text) {
+            // Convert **text** to <b>text</b> to remove the raw markdown stars
+            if (typeof text === 'string') {
+                return text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+            }
+            return text;
+        }
+
+        function appendMessage(sender, text) {
+            const wrapper = document.createElement("div");
+            wrapper.className = `msg-wrapper ${sender}`;
+            
+            const msgObj = document.createElement("div");
+            msgObj.className = `msg ${sender}`;
+            msgObj.innerHTML = formatMarkdown(text);
+
+            wrapper.appendChild(msgObj);
+            chatBox.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function showTyping() {
+            typingIndicator.classList.add("active");
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            typingIndicator.classList.remove("active");
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function quickAsk(question) {
+            inputField.value = question;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const query = inputField.value.trim();
+            if (!query) return;
+
+            inputField.value = "";
+            appendMessage("user", query);
+            showTyping();
+
+            try {
+                const response = await fetch(`/ask?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                hideTyping();
+                appendMessage("bot", data.message);
+            } catch (error) {
+                hideTyping();
+                appendMessage("bot", "⚠️ Network error. Please try again later.");
+            }
+        }
+
+        async function getGuide() {
+            appendMessage("user", "Show me the step-by-step voting guide.");
+            showTyping();
+            
+            try {
+                const response = await fetch("/guide");
+                const data = await response.json();
+                hideTyping();
+                
+                let html = "<b>📋 Step-by-Step Voting Guide:</b><ul>";
+                data.steps.forEach(step => {
+                    html += `<li>${step}</li>`;
+                });
+                html += "</ul>";
+                
+                appendMessage("bot", html);
+            } catch (error) {
+                hideTyping();
+                appendMessage("bot", "⚠️ Could not load the guide right now.");
+            }
+        }
+
+        function openModal() {
+            document.getElementById('registerModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('registerModal').style.display = 'none';
+        }
+
+        async function submitRegistration() {
+            const name = document.getElementById('regName').value;
+            const age = document.getElementById('regAge').value;
+            const address = document.getElementById('regAddress').value;
+
+            closeModal();
+            appendMessage("user", `I want to generate a Voter ID for ${name || "myself"}.`);
+            showTyping();
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, age, address })
+                });
+                const data = await response.json();
+                hideTyping();
+                
+                appendMessage("bot", data.message);
+                
+                if(data.success) {
+                    document.getElementById('regName').value = "";
+                    document.getElementById('regAge').value = "";
+                    document.getElementById('regAddress').value = "";
+                }
+            } catch (error) {
+                hideTyping();
+                appendMessage("bot", "⚠️ Error connecting to server.");
+            }
+        }
+    </script>
+</body>
+</html>
