@@ -57,7 +57,7 @@ def init_database():
         uri = env_db_url
     else:
         pg_uri = get_postgres_db_uri()
-        uri = pg_uri if pg_uri else "sqlite:///voter_db.db"
+        uri = pg_uri if pg_uri else "postgresql://postgres:root@localhost:5432/voting_system"
 
     app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
