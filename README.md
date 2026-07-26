@@ -1,4 +1,4 @@
-# CivicMate / VoteGuide AI – Smart Election Portal v3.0
+# 🗳️ CivicMate / VoteGuide AI – Smart Election Portal v3.0
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)
@@ -11,54 +11,62 @@
 
 ---
 
-## UI Showcase
+## 🌐 Live Web App Links
+
+- **🚀 Netlify Live Web App**: [https://visionary-hamster-ba6472.netlify.app](https://visionary-hamster-ba6472.netlify.app)
+- **🐙 GitHub Repository**: [https://github.com/pradnya1212/Smart-Election-Assistant](https://github.com/pradnya1212/Smart-Election-Assistant)
+- **💻 Local Server Access**: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+---
+
+## 📸 Screenshots & UI Showcase
 
 ```
 +-----------------------------------------------------------------------------------+
 | 🗳️ CIVICMATE | Election Portal v3.0                                pradnya [Logout] |
 +-------------------------------+---------------------------------------------------+
-|  Home                       |  [ Voters: 250 ]          [ Votes Cast: 1 ]       |
-|  Category List              |                                                   |
-|  Voting List                 |  Welcome, pradnya 👋                               |
-|  AI Assistant               |  +---------------------------------------------+  |
-|  Education Center           |  | 🏠 Home - Live election overview            |  |
-|  Admin Results              |  | Status: Eligible to Vote (Location: sangli)   |  |
+| 🏠 Home                       |  [ Voters: 250 ]          [ Votes Cast: 1 ]       |
+| 📂 Category List              |                                                   |
+| 🗳️ Voting List                 |  Welcome, pradnya 👋                               |
+| 🤖 AI Assistant               |  +---------------------------------------------+  |
+| 📖 Education Center           |  | 🏠 Home - Live election overview            |  |
+| 📊 Admin Results              |  | Status: Eligible to Vote (Location: sangli)   |  |
 |                               |  +---------------------------------------------+  |
 | LANGUAGE: [ English v ]       |  | 📍 Nearby Polling Station (Leaflet OSM Map)   |  |
 +-------------------------------+---------------------------------------------------+
 ```
 
-### 1. Main Dashboard & Polling Station Map
+### 1. 🏠 Main Dashboard & Polling Station Map
 Interactive overview featuring live voter counters, status verification checklist, and an embedded **Leaflet OpenStreetMap** showing assigned polling booths.
 
-### 2. Category Management List
+### 2. 📂 Category Management List
 Dynamic election category management (*Student Chairman*, *Student Vice-Chairman*, *Executive Members*) with full **Add**, **Edit**, and **Delete** capabilities.
 
-### 3. Candidate Voting List
+### 3. 🗳️ Candidate Voting List
 Official polling list with candidate profile cards (*Kamal*, *Rajni*, *Shivaji*, *MGR*, *Vijay*). Cast secure votes with real-time double-voting prevention.
 
-### 4. AI Assistant & Web Speech Voice Engine
+### 4. 🤖 AI Assistant & Web Speech Voice Engine
 Google Gemini 2.0 Flash powered AI assistant providing election guidance with one-click **`🔊 Speak` audio synthesis**.
 
-### 5. Interactive Education Center (Multi-Language)
+### 5. 📖 Interactive Education Center (Multi-Language)
 4-Step interactive election walkthrough with **`🔊 Listen` audio buttons** and dynamic translations across **English**, **Marathi (मराठी)**, and **Hindi (हिंदी)**.
 
-### 6. Dark Theme Admin Portal & Results
+### 6. 📊 Dark Theme Admin Portal & Results
 Secure password-protected admin portal (`admin123` / `root`) featuring dark theme candidate progress bars, vote percentage fills, and **`Reset Votes`** control.
 
 ---
 
-##  Key Features
+## 🎯 Key Features
 
 - **🐘 PostgreSQL Database Integration**: Persistent storage for voters, candidates, and audit-logged votes connected to PostgreSQL (`postgresql://postgres:root@localhost:5432/voting_system`).
-- ** 7-Language Indian Localization**: Native translation switching across English, Hindi, Marathi, Bengali, Tamil, Telugu, and Gujarati.
-- **Leaflet OpenStreetMap**: Interactive polling booth finder with custom map pins and popups.
-- ** Web Speech Voice Assistant**: Audio playback for educational guides and AI assistant responses.
-- ** Netlify Cloud Ready**: Configured with `netlify.toml` for cloud hosting.
+- **🌐 7-Language Indian Localization**: Native translation switching across English, Hindi, Marathi, Bengali, Tamil, Telugu, and Gujarati.
+- **🗺️ Leaflet OpenStreetMap**: Interactive polling booth finder with custom map pins and popups.
+- **🔊 Web Speech Voice Assistant**: Audio playback for educational guides and AI assistant responses.
+- **⚡ Netlify Cloud Ready**: Configured with `netlify.toml` for cloud hosting.
 
 ---
 
-##  System Architecture & Sequence Flow
+## 🧠 System Architecture & Sequence Flow
 
 ```mermaid
 sequenceDiagram
@@ -141,7 +149,7 @@ python -m pytest test_app.py
 
 ---
 
-##  How to Push Changes to GitHub Repository
+## 🚀 How to Push Changes to GitHub Repository
 
 ```bash
 # 1. Stage all changed and new files
@@ -156,7 +164,7 @@ git push origin main
 
 ---
 
-##  Netlify Cloud Deployment Guide
+## 🌐 Netlify Cloud Deployment Guide
 
 1. Push your repository to GitHub.
 2. Log into [Netlify Dashboard](https://app.netlify.com).
@@ -164,3 +172,7 @@ git push origin main
 4. Netlify will auto-detect `netlify.toml`. Click **Deploy Site**.
 5. Add `DATABASE_URL` and `GEMINI_API_KEY` under **Site configuration** -> **Environment variables**.
 
+---
+
+## 📜 License
+Developed for **CivicMate AI Democratic Election Initiative**. Open-source under MIT License.
