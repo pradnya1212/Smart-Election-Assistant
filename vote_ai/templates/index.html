@@ -854,13 +854,13 @@
             alert(`Vote successfully cast for ${candName}!`);
         }
 
-        // Dark Admin Portal
+        // Dark Admin Portal (Bypasses Sign In / Password)
         function openAdminPortal() {
             const adminView = document.getElementById("adminDarkView");
             adminView.classList.add("active");
-            document.getElementById("adminLoginScreen").style.display = "block";
-            document.getElementById("adminResultsScreen").style.display = "none";
-            document.getElementById("adminPassInput").value = "";
+            document.getElementById("adminLoginScreen").style.display = "none";
+            document.getElementById("adminResultsScreen").style.display = "block";
+            renderDarkAdminResults();
         }
 
         function closeAdminPortal() {
