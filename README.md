@@ -13,7 +13,7 @@
 
 ## 🌐 Live Web App Links
 
-- **🚀 Netlify Live Web App**: [https://visionary-hamster-ba6472.netlify.app](https://visionary-hamster-ba6472.netlify.app)
+- **🚀 Netlify Live Web App**: [https://visionary-hamster-ba6472.netlify.app](https://shimmering-wisp-357b78.netlify.app/)
 - **🐙 GitHub Repository**: [https://github.com/pradnya1212/Smart-Election-Assistant](https://github.com/pradnya1212/Smart-Election-Assistant)
 - **💻 Local Server Access**: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
