@@ -49,7 +49,7 @@ def get_postgres_db_uri():
         print(f"PostgreSQL connection check note: {e}")
         return None
 
-from models import db, Voter, Candidate, Vote
+from models import db, Voter, Candidate, Vote, Feedback
 
 def init_database():
     env_db_url = os.getenv("DATABASE_URL")
@@ -499,3 +499,29 @@ def get_voters():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port, threaded=True)
+
+@app.route("/submit-feedback", methods=["POST"])
+def submit_feedback():
+    data = request.get_json()
+
+    try:
+        feedback = Feedback(
+            name=data.get("name"),
+            rating=int(data.get("rating")),
+            comment=data.get("comment")
+        )
+
+        db.session.add(feedback)
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Thank you for your feedback!"
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": str(e)
+}), 500     
