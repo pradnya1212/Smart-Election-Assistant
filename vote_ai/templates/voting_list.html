@@ -37,7 +37,18 @@
     async function castVote(id) {
         const btn = document.getElementById('btn-' + id);
         btn.innerHTML = "...";
-        const res = await fetch('/vote?id=' + id);
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        const res = await fetch('/vote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ candidate_id: id })
+        });
+        
         const data = await res.json();
         if(data.success) {
             btn.innerHTML = "✔ Cast";

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoteGuide AI - CivicMate Election Portal</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Modern Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Leaflet OpenStreetMap CSS -->
@@ -836,9 +837,29 @@
             });
         }
 
-        function castVote(candId, candName, btn) {
+        async function castVote(candId, candName, btn) {
             if (votedCandidates.has(candId)) return;
             
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+                try {
+                    const res = await fetch('/vote', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ candidate_id: candId })
+                    });
+                    const data = await res.json();
+                    if (!data.success) {
+                        console.warn("Backend vote failed:", data.message);
+                    }
+                } catch(e) {
+                    console.error("Vote request error:", e);
+                }
+            }
+
             votedCandidates.add(candId);
             totalVotesCast++;
             document.getElementById("votesCastCount").textContent = totalVotesCast;

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CivicMate AI - Login</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #1e293b; --accent: #3b82f6; --bg: #f1f5f9; }
@@ -65,14 +66,20 @@
                 state: document.getElementById('state').value
             };
 
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
             // Register in real DB
-            await fetch('/api/register_voter', {
+            await fetch('/generate', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({
                     name: user.name,
                     age: user.age,
-                    location: user.state
+                    address: user.state,
+                    lang: 'English'
                 })
             });
 
