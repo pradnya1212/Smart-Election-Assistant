@@ -49,7 +49,7 @@ def get_postgres_db_uri():
         print(f"PostgreSQL connection check note: {e}")
         return None
 
-from models import db, Voter, Candidate, Vote
+from models import db, Voter, Candidate, Vote, Category
 
 def init_database():
     env_db_url = os.getenv("DATABASE_URL")
@@ -77,6 +77,11 @@ def _seed_candidates():
         c2 = Candidate(name="Anita Sharma", party="Civic Alliance", category="Mayor", votes_count=85)
         c3 = Candidate(name="Sanjay Deshmukh", party="Independent Reformers", category="Mayor", votes_count=45)
         db.session.add_all([c1, c2, c3])
+        
+        if not Category.query.filter_by(name="Mayor").first():
+            cat = Category(name="Mayor")
+            db.session.add(cat)
+            
         db.session.commit()
 
 init_database()
@@ -495,6 +500,70 @@ def get_results():
 def get_voters():
     voters = Voter.query.order_by(Voter.created_at.desc()).all()
     return jsonify({"voters": [v.to_dict() for v in voters]})
+
+@app.route("/categories", methods=["GET"])
+def categories_page():
+    categories = Category.query.all()
+    data = [[c.id, c.name] for c in categories]
+    return render_template("categories.html", data=data)
+
+@app.route("/api/categories", methods=["POST"])
+def add_category():
+    data = request.json or {}
+    name = data.get("name", "").strip()
+    if not name:
+        return jsonify({"success": False, "message": "Category name is required"})
+    try:
+        if Category.query.filter_by(name=name).first():
+            return jsonify({"success": False, "message": "Category already exists"})
+        c = Category(name=name)
+        db.session.add(c)
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)})
+
+@app.route("/api/categories/<int:id>", methods=["PUT"])
+def edit_category(id):
+    data = request.json or {}
+    name = data.get("name", "").strip()
+    if not name:
+        return jsonify({"success": False, "message": "Category name is required"})
+    try:
+        c = db.session.get(Category, id)
+        if not c:
+            return jsonify({"success": False, "message": "Category not found"})
+        
+        old_name = c.name
+        c.name = name
+        
+        # Update associated candidates
+        candidates = Candidate.query.filter_by(category=old_name).all()
+        for cand in candidates:
+            cand.category = name
+            
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)})
+
+@app.route("/api/categories/<int:id>", methods=["DELETE"])
+def delete_category(id):
+    try:
+        c = db.session.get(Category, id)
+        if not c:
+            return jsonify({"success": False, "message": "Category not found"})
+        
+        # Delete candidates in this category as prompted by UI confirmation
+        Candidate.query.filter_by(category=c.name).delete()
+        db.session.delete(c)
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))

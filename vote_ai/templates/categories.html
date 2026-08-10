@@ -5,10 +5,11 @@
     <div class="section-card">
         <h3 style="margin-bottom: 1.5rem; color: #334155;" data-i18n="cat_form">Category Form</h3>
         <label style="display: block; font-size: 0.85rem; margin-bottom: 0.5rem; color: #666;" data-i18n="cat_name">Category Name</label>
+        <input type="hidden" id="editCatId" value="">
         <input type="text" id="catName" class="input-field" placeholder="Enter Category">
         <div style="display: flex; gap: 1rem;">
             <button class="btn-primary" style="flex: 1;" onclick="saveCategory()" data-i18n="save">Save</button>
-            <button style="flex: 1; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="document.getElementById('catName').value=''" data-i18n="cancel">Cancel</button>
+            <button style="flex: 1; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="document.getElementById('catName').value=''; document.getElementById('editCatId').value='';" data-i18n="cancel">Cancel</button>
         </div>
     </div>
 
@@ -41,26 +42,43 @@
 <script>
     async function saveCategory() {
         const name = document.getElementById('catName').value;
+        const id = document.getElementById('editCatId').value;
         if(!name) return;
-        const res = await fetch('/api/categories', {
-            method: 'POST',
+        
+        let url = '/api/categories';
+        let method = 'POST';
+        if (id) {
+            url = '/api/categories/' + id;
+            method = 'PUT';
+        }
+        
+        const res = await fetch(url, {
+            method: method,
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({name})
         });
         const data = await res.json();
-        if(data.success) window.location.reload();
+        if(data.success) {
+            window.location.reload();
+        } else {
+            alert(data.message || 'Error saving category');
+        }
     }
 
     async function deleteCategory(id) {
         if(!confirm('Are you sure? This will delete all candidates in this category.')) return;
         const res = await fetch('/api/categories/' + id, { method: 'DELETE' });
         const data = await res.json();
-        if(data.success) window.location.reload();
+        if(data.success) {
+            window.location.reload();
+        } else {
+            alert(data.message || 'Error deleting category');
+        }
     }
 
     function editCategory(id, name) {
         document.getElementById('catName').value = name;
-        // Logic for update can be added if needed, for now we just fill the box
+        document.getElementById('editCatId').value = id;
     }
 </script>
 {% endblock %}
