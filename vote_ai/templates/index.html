@@ -429,7 +429,96 @@
             text-align: right;
         }
 
-        /* General View Hiding */
+        /*Feedback Styling*/
+            .feedback-group{
+        margin-bottom:20px;
+    }
+
+    .feedback-group label{
+        display:block;
+        margin-bottom:8px;
+        font-weight:600;
+    }
+
+    .feedback-group input,
+    .feedback-group select,
+    .feedback-group textarea{
+
+        width:100%;
+        padding:12px;
+
+        border:1px solid #d1d5db;
+        border-radius:10px;
+
+        font-size:15px;
+
+        box-sizing:border-box;
+
+        outline:none;
+    }
+
+    .feedback-group input:focus,
+    .feedback-group select:focus,
+    .feedback-group textarea:focus{
+
+        border-color:#2563eb;
+
+        box-shadow:0 0 0 3px rgba(37,99,235,.15);
+
+    }
+
+    .feedback-btn{
+
+        background:#2563eb;
+        color:white;
+
+        border:none;
+
+        padding:12px 22px;
+
+        border-radius:10px;
+
+        cursor:pointer;
+
+        font-size:16px;
+
+        transition:.3s;
+    }
+
+    .feedback-btn:hover{
+
+        background:#1d4ed8;
+
+    }
+        #feedbackView .card-container{
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    #feedbackView .main-card{
+        width: 100%;
+        max-width: 700px;
+    }
+
+    @media(max-width:768px){
+
+    .feedback-group input,
+    .feedback-group select,
+    .feedback-group textarea{
+
+        font-size:14px;
+
+    }
+
+    .feedback-btn{
+
+        width:100%;
+
+    }
+
+    }
+            /* General View Hiding */
         .view-content { display: none; }
         .view-content.active { display: block; }
     </style>
@@ -460,7 +549,10 @@
             <div class="menu-item" onclick="openAdminPortal()">
                 <span>📊</span> <span class="nav-txt-admin">Admin Results</span>
             </div>
-        </div>
+             <div class="menu-item" onclick="showView('feedback')">
+                <span>💬</span> <span class="nav-txt-feed">Feedback</span>
+            </div>
+         </div>
         <div class="sidebar-footer">
             <div class="sidebar-title">LANGUAGE</div>
             <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
@@ -667,7 +759,67 @@
                     </div>
                 </div>
             </div>
+                
+                <!-- 6. Feedback View -->
+        <div id="feedbackView" class="view-content">
 
+            <div class="card-container">
+
+                <div class="main-card flex-1">
+
+                    <h2 style="margin-bottom:0.5rem;font-size:1.8rem;">
+                        💬 User Feedback
+                    </h2>
+
+                    <p style="color:var(--text-muted);margin-bottom:2rem;">
+                        Help us improve CivicMate by sharing your experience.
+                    </p>
+
+                    <form id="feedbackForm">
+
+                        <div class="feedback-group">
+                            <label>Your Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                placeholder="Enter your name"
+                                required>
+                        </div>
+
+                        <div class="feedback-group">
+                            <label>Rating</label>
+
+                            <select id="rating">
+                                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                                <option value="4">⭐⭐⭐⭐ Good</option>
+                                <option value="3">⭐⭐⭐ Average</option>
+                                <option value="2">⭐⭐ Poor</option>
+                                <option value="1">⭐ Very Poor</option>
+                            </select>
+                        </div>
+
+                        <div class="feedback-group">
+                            <label>Your Feedback</label>
+
+                            <textarea
+                                id="comment"
+                                rows="6"
+                                placeholder="Write your feedback here..."
+                                required></textarea>
+                        </div>
+
+                        <button class="feedback-btn" type="submit">
+                            Submit Feedback
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+        
         </main>
     </div>
 
@@ -698,7 +850,8 @@
             </div>
         </div>
     </div>
-
+ 
+    
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -725,7 +878,8 @@
                 'categories': 2,
                 'voting': 3,
                 'chat': 4,
-                'education': 5
+                'education': 5,
+                'feedback': 7
             };
 
             const viewId = viewName + 'View';
@@ -1060,6 +1214,37 @@
             const savedLang = localStorage.getItem("selectedLang") || "English";
             document.getElementById("langSelect").value = savedLang;
             changeLanguage(savedLang);
+        });
+        //For submit feedback form
+        document.getElementById("feedbackForm").addEventListener("submit", async function(e) {
+           e.preventDefault();
+           const data = {
+               name: document.getElementById("name").value,
+                rating: document.getElementById("rating").value,
+               comment: document.getElementById("comment").value
+           };
+
+          const response = await fetch("/submit-feedback", {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json"
+           },
+         body: JSON.stringify(data)
+        });
+
+       const result = await response.json();
+
+       alert(result.message);
+
+       if (result.success) {
+        document.getElementById("feedbackForm").reset();
+       }
+       });
+        //feedback submitted message
+        document.getElementById("feedbackForm").addEventListener("submit", function (e) {
+           e.preventDefault();
+           alert("Thank you! Your feedback has been submitted.");
+           this.reset();
         });
     </script>
 </body>
