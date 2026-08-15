@@ -1,7 +1,8 @@
 import os
 import random
 import string
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
+from flask_wtf.csrf import CSRFProtect
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -16,6 +17,8 @@ except ImportError:
     legacy_genai = None
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(24).hex())
+csrf = CSRFProtect(app)
 
 # 🐘 PostgreSQL Database Configuration
 def get_postgres_db_uri():
@@ -413,6 +416,7 @@ def generate():
         new_voter = Voter(voter_id=voter_id, name=name, age=age, address=address)
         db.session.add(new_voter)
         db.session.commit()
+        session['voter_id'] = voter_id
     except Exception as e:
         db.session.rollback()
         print(f"Error persisting voter to Database: {e}")
@@ -445,11 +449,15 @@ def get_candidates():
 @app.route("/vote", methods=["POST"])
 def vote():
     data = request.json or {}
-    voter_id_code = data.get("voter_id", "").strip()
+    # Use robust server-side session to prevent spoofing
+    voter_id_code = session.get("voter_id")
     candidate_id = data.get("candidate_id")
 
-    if not voter_id_code or not candidate_id:
-        return jsonify({"success": False, "message": "Voter ID and Candidate selection are required."})
+    if not voter_id_code:
+        return jsonify({"success": False, "message": "Unauthorized. Please register to vote first."}), 403
+
+    if not candidate_id:
+        return jsonify({"success": False, "message": "Candidate selection is required."}), 400
 
     voter = Voter.query.filter_by(voter_id=voter_id_code).first()
     if not voter:

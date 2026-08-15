@@ -1,4 +1,5 @@
 flask
+Flask-WTF
 google-genai
 gunicorn
 pytest
