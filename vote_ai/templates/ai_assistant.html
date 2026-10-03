@@ -23,19 +23,28 @@
     </div>
     <div style="display: flex; gap: 0.5rem;">
         <input type="text" id="userInput" class="input-field" placeholder="..." onkeypress="handleKeyPress(event)" style="margin-bottom: 0;">
-        <button class="btn-primary" onclick="sendMessage()" data-i18n="send">Send</button>
+        <button id="sendBtn" class="btn-primary" onclick="sendMessage()" data-i18n="send">Send</button>
     </div>
 </div>
 
 <script>
     async function sendMessage() {
         const input = document.getElementById('userInput');
+        const btn = document.getElementById('sendBtn');
         const msg = input.value.trim();
         if(!msg) return;
-        appendMsg('user', msg);
+        
         input.value = '';
+        input.disabled = true;
+        if(btn) btn.disabled = true;
+        
+        appendMsg('user', msg);
 
-        const typing = appendMsg('bot', 'Thinking...');
+        const typing = appendMsg('bot', `
+            <span style="display:inline-block; width:1rem; height:1rem; border:2px solid rgba(0,0,0,0.2); border-top-color:#334155; border-radius:50%; animation:spin 1s linear infinite; vertical-align:middle; margin-right:8px;"></span>
+            <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+            Thinking...
+        `);
         const lang = localStorage.getItem('lang') || 'English';
 
         try {
@@ -43,7 +52,15 @@
             const data = await res.json();
             typing.innerHTML = data.message;
             addVoiceBtn(typing, data.message);
-        } catch(e) { typing.innerHTML = "⚠️ Service unavailable."; }
+            input.disabled = false;
+            if(btn) btn.disabled = false;
+            input.focus();
+        } catch(e) { 
+            typing.innerHTML = "⚠️ Service unavailable."; 
+            input.disabled = false;
+            if(btn) btn.disabled = false;
+            input.focus();
+        }
     }
 
     function appendMsg(sender, text) {

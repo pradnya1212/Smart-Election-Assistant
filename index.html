@@ -615,7 +615,7 @@
                 <div class="input-area">
                     <div class="input-box">
                         <input type="text" id="userInput" placeholder="Ask a question..." onkeypress="handleKeyPress(event)">
-                        <button class="send-btn" onclick="sendMessage()">Send</button>
+                        <button id="sendBtn" class="send-btn" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
             </div>
@@ -933,6 +933,40 @@
             }
         }
 
+        // Toast Notification System
+        function showToast(message) {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                Object.assign(container.style, {
+                    position: 'fixed', bottom: '20px', right: '20px', zIndex: '9999',
+                    display: 'flex', flexDirection: 'column', gap: '10px'
+                });
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            toast.innerText = message;
+            Object.assign(toast.style, {
+                background: '#1e293b', color: '#fff', padding: '12px 20px',
+                borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                fontSize: '0.95rem', transition: 'all 0.3s ease-out',
+                transform: 'translateX(100%)', opacity: '0'
+            });
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.style.transform = 'translateX(0)';
+                toast.style.opacity = '1';
+            });
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(100%)';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         // AI Chat Engine
         function handleKeyPress(e) {
             if (e.key === 'Enter') sendMessage();
@@ -940,10 +974,14 @@
 
         async function sendMessage() {
             const input = document.getElementById("userInput");
+            const btn = document.getElementById("sendBtn");
             const text = input.value.trim();
             if (!text) return;
 
             input.value = "";
+            input.disabled = true;
+            if(btn) btn.disabled = true;
+
             const chatBox = document.getElementById("chat");
 
             // User Message
@@ -953,26 +991,65 @@
             chatBox.appendChild(userWrapper);
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Fetch AI Response
+            // Fetch AI Response (Async Task)
             try {
-                const res = await fetch(`/ask?q=${encodeURIComponent(text)}`);
-                const data = await res.json();
+                const initRes = await fetch(`/ask?q=${encodeURIComponent(text)}`);
+                const initData = await initRes.json();
                 
+                // Show loading message
                 const botWrapper = document.createElement("div");
                 botWrapper.className = "msg-wrapper bot";
                 botWrapper.innerHTML = `
                     <div class="msg-content-box">
-                        <div class="msg bot">${data.message}</div>
-                        <button class="speak-btn" onclick="speakText('${data.message.replace(/'/g, "\\'")}')">🔊 Speak</button>
+                        <div class="msg bot" id="loading-${initData.task_id}">
+                            <span style="display:inline-block; width:1rem; height:1rem; border:2px solid rgba(0,0,0,0.2); border-top-color:#334155; border-radius:50%; animation:spin 1s linear infinite; vertical-align:middle; margin-right:8px;"></span>
+                            <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+                            AI is thinking...
+                        </div>
                     </div>
                 `;
                 chatBox.appendChild(botWrapper);
                 chatBox.scrollTop = chatBox.scrollHeight;
+
+                const poll = setInterval(async () => {
+                    const statusRes = await fetch(`/task_status/${initData.task_id}`);
+                    const statusData = await statusRes.json();
+                    
+                    if (statusData.state === 'SUCCESS') {
+                        clearInterval(poll);
+                        const data = statusData.result;
+                        const loadingMsg = document.getElementById(`loading-${initData.task_id}`);
+                        if (loadingMsg) {
+                            loadingMsg.innerHTML = data.message;
+                            loadingMsg.removeAttribute('id');
+                            const speakBtn = document.createElement("button");
+                            speakBtn.className = "speak-btn";
+                            speakBtn.innerText = "🔊 Speak";
+                            speakBtn.onclick = () => speakText(data.message.replace(/'/g, "\\'"));
+                            loadingMsg.parentNode.appendChild(speakBtn);
+                        }
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                        input.disabled = false;
+                        if(btn) btn.disabled = false;
+                        input.focus();
+                    } else if (statusData.state === 'FAILURE') {
+                        clearInterval(poll);
+                        const loadingMsg = document.getElementById(`loading-${initData.task_id}`);
+                        if (loadingMsg) loadingMsg.innerHTML = "⚠️ Error processing request.";
+                        input.disabled = false;
+                        if(btn) btn.disabled = false;
+                        input.focus();
+                    }
+                }, 1000);
+
             } catch (err) {
                 const botWrapper = document.createElement("div");
                 botWrapper.className = "msg-wrapper bot";
-                botWrapper.innerHTML = `<div class="msg bot">🗳️ Service online. Ask any voting query!</div>`;
+                botWrapper.innerHTML = `<div class="msg bot">⚠️ Service online, but failed to connect.</div>`;
                 chatBox.appendChild(botWrapper);
+                input.disabled = false;
+                if(btn) btn.disabled = false;
+                input.focus();
             }
         }
 
@@ -1023,6 +1100,8 @@
             document.querySelector(".nav-txt-ai").textContent = dict.navAi;
             document.querySelector(".nav-txt-edu").textContent = dict.navEdu;
             document.querySelector(".nav-txt-admin").textContent = dict.navAdmin;
+            
+            showToast(`Language updated to ${lang}`);
 
             document.getElementById("welcomeHeading").textContent = dict.welcome;
             document.getElementById("homeCardTitle").textContent = dict.homeCardTitle;
