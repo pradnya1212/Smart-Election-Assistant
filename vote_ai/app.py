@@ -3,6 +3,7 @@ import random
 import string
 from flask import Flask, render_template, request, jsonify, session
 from flask_wtf.csrf import CSRFProtect
+from markupsafe import escape
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -168,14 +169,19 @@ def translate():
     target_lang = data.get("lang", "Hindi")
     
     if not client or not text:
-        return jsonify({"translated": text})
-        
-    prompt = f"Translate the following text into {target_lang}. Keep the same tone, HTML tags, and emojis:\n\n{text}"
+        # FIX: Sanitize fallback text
+        return jsonify({"translated": escape(text)}) 
+    
+    # FIX: Instruct the AI not to execute/include HTML
+    prompt = f"Translate the following text into {target_lang}. Keep the same tone, and emojis. DO NOT include or execute any HTML tags:\n\n{text}"
+    
     try:
         res = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
-        return jsonify({"translated": res.text.strip() if res.text else text})
+        # FIX: Sanitize the AI response before returning it to prevent XSS via .innerHTML injection
+        safe_text = escape(res.text.strip()) if res.text else escape(text)
+        return jsonify({"translated": safe_text})
     except:
-        return jsonify({"translated": text})
+        return jsonify({"translated": escape(text)})
 
 def ai_get_suggestions(query, bot_response, lang="English"):
     """Uses AI to generate 3 relevant follow-up questions in target language."""
